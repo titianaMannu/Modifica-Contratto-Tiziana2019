@@ -38,7 +38,7 @@ public class AddServiceModification extends Modification{
         //aggiunta del nuovo servizio alla lista di supporto
         newList.add(service);
         return new Contract(c.getContractId(), c.isExipired(), c.getInitDate(), c.getTerminationDate(),
-                c.getPaymentMethod(), c.getTenantName(), c.getRenterName(), c.getTenantCF(), c.getRenterCF(),
+                c.getPaymentMethod(), c.getTenantNickname(), c.getRenterNickname(), c.getTenantCF(), c.getRenterCF(),
                 c.getGrossPrice() + service.getServicePrice() , c.getNetPrice(), c.getFrequencyOfPayment(), c.isReported(), newList);
     }
 }

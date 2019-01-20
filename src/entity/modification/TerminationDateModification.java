@@ -35,7 +35,7 @@ public class TerminationDateModification extends Modification {
             return c;
         }
         return new Contract(c.getContractId(), c.isExipired(), c.getInitDate(), (LocalDate)this.objectToChange,
-                c.getPaymentMethod(), c.getTenantName(), c.getRenterName(), c.getTenantCF(), c.getRenterCF(),
+                c.getPaymentMethod(), c.getTenantNickname(), c.getRenterNickname(), c.getTenantCF(), c.getRenterCF(),
                 c.getGrossPrice(), c.getNetPrice(), c.getFrequencyOfPayment(), c.isReported(), c.getServiceList());
     }
 }

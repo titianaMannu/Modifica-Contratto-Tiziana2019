@@ -36,7 +36,7 @@ public class RemoveServiceModification extends Modification{
         }
         OptionalService service = newList.remove(newList.indexOf(objectToChange));
         return new Contract(c.getContractId(), c.isExipired(), c.getInitDate(), c.getTerminationDate(),
-                c.getPaymentMethod(), c.getTenantName(), c.getRenterName(), c.getTenantCF(), c.getRenterCF(),
+                c.getPaymentMethod(), c.getTenantNickname(), c.getRenterNickname(), c.getTenantCF(), c.getRenterCF(),
                 c.getGrossPrice() - service.getServicePrice(), c.getNetPrice(), c.getFrequencyOfPayment(),
                 c.isReported(), newList);
 

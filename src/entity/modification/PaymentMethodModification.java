@@ -33,7 +33,7 @@ public class PaymentMethodModification extends Modification {
             return c;
         }
         return new Contract(c.getContractId(), c.isExipired(), c.getInitDate(), c.getTerminationDate(),
-                (TypeOfPayment) objectToChange, c.getTenantName(), c.getRenterName(), c.getTenantCF(), c.getRenterCF(),
+                (TypeOfPayment) objectToChange, c.getTenantNickname(), c.getRenterNickname(), c.getTenantCF(), c.getRenterCF(),
                 c.getGrossPrice(), c.getNetPrice(), c.getFrequencyOfPayment(), c.isReported(), c.getServiceList());
     }
 }

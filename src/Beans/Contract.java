@@ -18,8 +18,8 @@ public class Contract implements Serializable {
     private LocalDate initDate;
     private LocalDate terminationDate;
     private TypeOfPayment paymentMethod;
-    private String tenantName;
-    private String renterName;
+    private String tenantNickname;
+    private String renterNickname;
     private String tenantCF;
     private String renterCF;
     private int grossPrice; // Prezzo rata con inclusi costi servizi
@@ -39,8 +39,8 @@ public class Contract implements Serializable {
         this.initDate = initDate;
         this.terminationDate = terminationDate;
         this.paymentMethod = paymentMethod;
-        this.tenantName = tenantName;
-        this.renterName = renterName;
+        this.tenantNickname = tenantName;
+        this.renterNickname = renterName;
         this.tenantCF = tenantCF;
         this.renterCF = renterCF;
         this.grossPrice = grossPrice;
@@ -70,12 +70,12 @@ public class Contract implements Serializable {
         return paymentMethod;
     }
 
-    public String getTenantName() {
-        return tenantName;
+    public String getTenantNickname() {
+        return tenantNickname;
     }
 
-    public String getRenterName() {
-        return renterName;
+    public String getRenterNickname() {
+        return renterNickname;
     }
 
     public String getTenantCF() {
@@ -121,8 +121,8 @@ public class Contract implements Serializable {
                 ", initDate=" + initDate +
                 ", terminationDate=" + terminationDate +
                 ", paymentMethod=" + paymentMethod +
-                ", tenantName='" + tenantName + '\'' +
-                ", renterName='" + renterName + '\'' +
+                ", tenantNickname='" + tenantNickname + '\'' +
+                ", renterNickname='" + renterNickname + '\'' +
                 ", tenantCF='" + tenantCF + '\'' +
                 ", renterCF='" + renterCF + '\'' +
                 ", grossPrice=" + grossPrice +
