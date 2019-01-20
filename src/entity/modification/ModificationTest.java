@@ -7,6 +7,7 @@ import entity.TypeOfPayment;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+
 public class ModificationTest {
     public static void main(String args[]){
         Contract c= new Contract(100, false, LocalDate.now(), LocalDate.now(), TypeOfPayment.CREDIT_CARD, "", "",
