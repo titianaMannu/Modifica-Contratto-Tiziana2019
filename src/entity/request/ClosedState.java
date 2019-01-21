@@ -1,10 +1,11 @@
 package entity.request;
 
 import Beans.Contract;
+import entity.modification.Modification;
 
 public class ClosedState extends State {
-    public ClosedState(Contract contract) {
-        super(contract);
+    public ClosedState(Contract contract, Modification modfc) {
+        super(contract, modfc);
         this.status = RequestStatus.CLOSED;
     }
 
@@ -14,7 +15,7 @@ public class ClosedState extends State {
     }
 
     @Override
-    public State stop(RequestForModification requestForModification) {
+    public State decline(RequestForModification requestForModification) {
         return requestForModification.getCurrentState();
     }
 }

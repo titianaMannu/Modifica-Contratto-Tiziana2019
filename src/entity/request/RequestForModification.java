@@ -13,8 +13,6 @@ public class RequestForModification {
     private String senderNickname;
     private String receiverNickname;
     private LocalDate dateOfSubmission;
-    //aggregazione
-    private Modification modification;
 
     /**
      * Il controllo sui parametri viene fatto nelle funzioni setter (Incapsulamento della logica i controllo ui dati)
@@ -23,22 +21,10 @@ public class RequestForModification {
      * @param modfc : Modification
      * @param sender : String
      */
-    public RequestForModification(Contract c, Modification modfc, String sender) throws  IllegalArgumentException, IllegalStateException{
-        this.currentState = new PendingState(c); // non appena creata la proposta questa deve essere pending
+    public RequestForModification(Contract c, Modification modfc, String sender) throws  IllegalArgumentException{
+        this.currentState = new PendingState(c, modfc); // non appena creata la proposta questa deve essere pending
         this.dateOfSubmission = LocalDate.now(); //La data della proposta è quella corrente
         this.setSenderReceiver(sender, currentState.getContract());
-        this.setModification(modfc);
-    }
-
-    public void setModification(Modification modfc) throws IllegalArgumentException{
-        if (modfc== null) throw new IllegalArgumentException();
-        Contract tempC = modfc.update(currentState.getContract());
-        if (!tempC.equals(currentState.getContract())){
-            //confronto con equals:
-            this.modification = modfc;
-        }
-        else //modifica non ha effetti sul contratto
-            throw new IllegalArgumentException();
     }
 
 
@@ -59,13 +45,18 @@ public class RequestForModification {
 
     }
 
-
+    /**
+     * Normale avanzamento di stato nell'happy scenario
+     */
     public void forward(){
         setState(this.currentState.forward(this));
     }
 
-    public void stop(){
-        setState(this.currentState.stop(this));
+    /**
+     *Avanzamento di stato nella direzione di decline o  expired
+     */
+    public void  decline(){
+        setState(this.currentState.decline(this));
     }
 
     /**
@@ -88,7 +79,6 @@ public class RequestForModification {
                 ", senderNickname='" + senderNickname + '\'' +
                 ", receiverNickname='" + receiverNickname + '\'' +
                 ", dateOfSubmission=" + dateOfSubmission +
-                ", modification=" + modification +
                 '}';
     }
 
