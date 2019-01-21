@@ -22,6 +22,8 @@ public abstract class Modification {
 
     @Override
     public String toString(){
-        return  objectToChange.toString() + "sovrascrive l'originale perché: " + reasonWhy;
+        return  objectToChange.toString() + "  sovrascrive l'originale perché: " + reasonWhy;
     }
+
+
 }
