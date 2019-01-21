@@ -1,7 +1,6 @@
 package entity;
 
 /**
- *
  * PENDING: il Mittente ha inviato la richiesta che ancora non è stata visualizzata. È possibile modificare i parametri della richiesta
  * EVALUATING: Il Destinatario sta visualizzando e valutando la risposta. Non è possibile modificare i parametri della richiesta.
  * ACCEPTED: La richiesta è stata accetata. Il Mittente non ha visualizzato la risposta
@@ -18,7 +17,7 @@ public enum RequestStatus {
     CLOSED(5);
 
     private int current;
-    private RequestStatus(int status){
+    RequestStatus(int status){
         this.current = status;
     }
 
