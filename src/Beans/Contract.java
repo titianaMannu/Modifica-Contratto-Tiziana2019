@@ -7,26 +7,27 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * di fatto è un bean che ha l'unico scopo di contenere le informazioni
  * È  importante che non ci siano setter! I parametri si definiscono tutti nel costruttore.
  */
 public class Contract implements Serializable {
-    private long contractId;
+    private long contractId; // importante!
     private boolean isExipired;
-    private LocalDate initDate;
-    private LocalDate terminationDate;
-    private TypeOfPayment paymentMethod;
-    private String tenantNickname;
-    private String renterNickname;
+    private LocalDate initDate; // importante!
+    private LocalDate terminationDate; // importante!
+    private TypeOfPayment paymentMethod; // importante!
+    private String tenantNickname; // importante!
+    private String renterNickname;// importante!
     private String tenantCF;
     private String renterCF;
-    private int grossPrice; // Prezzo rata con inclusi costi servizi
+    private int grossPrice; // Prezzo rata + costi servizi; importante!
     private int netPrice; // prezzo netto per l'affitto
     private int frequencyOfPayment; // Mesi
     private boolean reported; // Serve per il Termina contratto, se c'è già una segnalazione pendente
-    private List<OptionalService> serviceList;
+    private List<OptionalService> serviceList; // importante!
 
 
     public Contract(long contractId, boolean isExpired, LocalDate initDate, LocalDate terminationDate,
@@ -112,6 +113,28 @@ public class Contract implements Serializable {
       //  deepCopy.addAll(serviceList);
         return deepCopy;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Contract contract = (Contract) object;
+        return contractId == contract.contractId &&
+                isExipired == contract.isExipired &&
+                grossPrice == contract.grossPrice &&
+                netPrice == contract.netPrice &&
+                frequencyOfPayment == contract.frequencyOfPayment &&
+                reported == contract.reported &&
+                Objects.equals(initDate, contract.initDate) &&
+                Objects.equals(terminationDate, contract.terminationDate) &&
+                paymentMethod == contract.paymentMethod &&
+                Objects.equals(tenantNickname, contract.tenantNickname) &&
+                Objects.equals(renterNickname, contract.renterNickname) &&
+                Objects.equals(tenantCF, contract.tenantCF) &&
+                Objects.equals(renterCF, contract.renterCF) &&
+                Objects.equals(serviceList, contract.serviceList);
+    }
+
 
     @Override
     public String toString() {
