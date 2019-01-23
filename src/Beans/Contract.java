@@ -14,7 +14,7 @@ import java.util.Objects;
  * È  importante che non ci siano setter! I parametri si definiscono tutti nel costruttore.
  */
 public class Contract implements Serializable {
-    private long contractId; // importante!
+    private int contractId; // importante!
     private boolean isExipired;
     private LocalDate initDate; // importante!
     private LocalDate terminationDate; // importante!
@@ -30,7 +30,7 @@ public class Contract implements Serializable {
     private List<OptionalService> serviceList; // importante!
 
 
-    public Contract(long contractId, boolean isExpired, LocalDate initDate, LocalDate terminationDate,
+    public Contract(int contractId, boolean isExpired, LocalDate initDate, LocalDate terminationDate,
                     TypeOfPayment paymentMethod, String tenantName, String renterName, String tenantCF,
                     String renterCF, int grossPrice, int netPrice, int frequencyOfPayment, boolean reported,
                     List<OptionalService> serviceList) {
@@ -51,7 +51,7 @@ public class Contract implements Serializable {
         this.serviceList = serviceList;
     }
 
-    public long getContractId() {
+    public int  getContractId() {
         return contractId;
     }
 
