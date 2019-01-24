@@ -71,10 +71,8 @@ public class PaymentMethodModfcDao implements ModificationDao {
         try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
             st.setInt(1, contract.getContractId());
             ResultSet res = st.executeQuery();
-            if (res.next()) {
-                closeResources(conn, st);
+            if (res.next())
                 return res.getInt("numOfRequests") == 0;
-            }
         }catch (SQLException e){
             //TODO Gestione errore
         }
@@ -83,10 +81,6 @@ public class PaymentMethodModfcDao implements ModificationDao {
         return false;
     }
 
-    public void closeResources(Connection conn, Statement st )throws SQLException{
-        conn.close();
-        st.close();
-    }
 
     @Override
     public Modification getModification() {
