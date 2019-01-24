@@ -25,7 +25,30 @@ public class AddServiceModfcDao implements ModificationDao {
     }
 
     @Override
-    public boolean updateContract(Contract c) {
+    public boolean updateContract(Contract c, Modification modification)throws IllegalArgumentException {
+        if (! (modification instanceof AddServiceModification))
+            throw new IllegalArgumentException("Argument had to be AddServiceModificationType");
+
+        OptionalService service = (OptionalService) modification.getObjectToChange();
+        String sql_1, sql_2;
+        sql_1= "update OptionalService set ActiveContract_idContract = ?\n" +
+                "where idService = ?";
+        sql_2 = "update ActiveContract set grossPrice = grossPrice + ?\n" +
+                "where idContract = ?";
+        try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st1= conn.prepareStatement(sql_1);
+             PreparedStatement st2 = conn.prepareStatement(sql_2)){
+
+            st1.setInt(1, c.getContractId());
+            st1.setInt(2, service.getServiceId());
+            st2.setInt(1, service.getServicePrice());
+            st2.setInt(2, c.getContractId());
+            if (st1.executeUpdate() == 1 && st2.executeUpdate() == 1)
+                return true;
+
+        }catch (SQLException e){
+            //TODO something
+        }
+
         return false;
     }
 

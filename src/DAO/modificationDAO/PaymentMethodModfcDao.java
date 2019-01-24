@@ -2,11 +2,9 @@ package DAO.modificationDAO;
 
 import Beans.Contract;
 import DAO.C3poDataSource;
-import DAO.modificationDAO.ModificationDao;
 import entity.TypeOfPayment;
 import entity.modification.Modification;
 import entity.modification.PaymentMethodModification;
-import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
 
 import java.sql.*;
@@ -26,7 +24,23 @@ public class PaymentMethodModfcDao implements ModificationDao {
     }
 
     @Override
-    public boolean updateContract(Contract c) {
+    public boolean updateContract(Contract c, Modification modification) throws  IllegalArgumentException {
+        if (! (modification instanceof PaymentMethodModification))
+            throw new IllegalArgumentException("Argument had to be AddServiceModificationType");
+
+        String sql ="update ActiveContract set paymentMethod = ?\n" +
+                "where idContract = ?";
+
+        TypeOfPayment type = (TypeOfPayment)modification.getObjectToChange();
+        try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
+            st.setInt(1, type.getValue());
+            st.setInt(2, c.getContractId());
+            if (st.executeUpdate() == 1)
+                return true;
+
+        }catch (SQLException e){
+            //TODO something
+        }
         return false;
     }
 

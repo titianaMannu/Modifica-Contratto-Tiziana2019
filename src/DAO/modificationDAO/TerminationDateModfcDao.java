@@ -24,7 +24,24 @@ public class TerminationDateModfcDao implements ModificationDao {
     }
 
     @Override
-    public boolean updateContract(Contract c) {
+    public boolean updateContract(Contract c, Modification modification) throws IllegalArgumentException{
+        if (! (modification instanceof TerminationDateModification))
+            throw new IllegalArgumentException("Argument had to be AddServiceModificationType");
+
+        LocalDate date = (LocalDate)modification.getObjectToChange();
+        String sql ="update ActiveContract set terminationDate = ?\n" +
+                "where idContract = ?";
+
+        try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
+            st.setDate(1, Date.valueOf(date));
+            st.setInt(2, c.getContractId());
+            if (st.executeUpdate() == 1)
+                return true;
+
+        }catch (SQLException e){
+            //TODO something
+        }
+
         return false;
     }
 
@@ -73,22 +90,15 @@ public class TerminationDateModfcDao implements ModificationDao {
             st.setInt(1, contract.getContractId());
             ResultSet res = st.executeQuery();
 
-            if (res.next()) {
+            if (res.next())
                 //per lo stesso contratto ci deve essere 1 sola richiesta PENDING di questo tipo
-                closeResources(conn, st);
                 return res.getInt("numOfRequests") == 0;
-            }
         }catch (SQLException e){
             //TODO Gestione errore
         }
 
         //se arrivo qui qualcosa è andato storto
         return false;
-    }
-
-    public void closeResources(Connection conn, Statement st )throws SQLException{
-        conn.close();
-        st.close();
     }
 
     @Override
