@@ -1,5 +1,4 @@
 package entity.modification;
-
 import Beans.Contract;
 
 import java.time.LocalDate;
@@ -7,35 +6,31 @@ import java.time.LocalDate;
 public class TerminationDateModification extends Modification {
 
 
-    public TerminationDateModification(String reasonWhy, Object objectToChange){
-        super(reasonWhy, objectToChange);
-        try {
-            if (!(objectToChange instanceof LocalDate)) {
-                throw new IllegalArgumentException("*******Argument must be a  LocalDate instance*******\n");
-            }
-
-        }catch (IllegalArgumentException e){
-            e.printStackTrace();
-            //TODO gestione dell'errore in modo opportuno
-            System.exit(1);
+    public TerminationDateModification(Object objectToChange)throws  IllegalArgumentException{
+        super(objectToChange);
+        if (!(objectToChange instanceof LocalDate)) {
+            throw new IllegalArgumentException("*******Argument must be a  LocalDate instance*******\n");
         }
     }
 
-    /**
-     * Non potendo modificare direttamente l'entità contratto se ne deve instanziare una nuova con i parametri modificati
-     * TODO controllo degli errori
-     * @param c
-     * @return
-     */
     @Override
-    public Contract update(Contract c){
-        LocalDate newDate = (LocalDate)objectToChange;
-        if (newDate.isBefore(LocalDate.now()) | c.getTerminationDate().equals(objectToChange)){
-            //messaggio di errore
-            return c;
+    public boolean validate(Contract contract) {
+        LocalDate newDate = this.getObjectToChange();
+        if (newDate.isBefore(LocalDate.now().plusDays(30)) | contract.getTerminationDate().equals(newDate))
+            return false;
+        return true;
+    }
+
+    @Override
+    public void setObjectToChange(Object objectToChange) throws IllegalArgumentException {
+        if (!(objectToChange instanceof LocalDate)) {
+            throw new IllegalArgumentException("*******Argument must be a  LocalDate instance*******\n");
         }
-        return new Contract(c.getContractId(), c.isExipired(), c.getInitDate(), (LocalDate)this.objectToChange,
-                c.getPaymentMethod(), c.getTenantNickname(), c.getRenterNickname(), c.getTenantCF(), c.getRenterCF(),
-                c.getGrossPrice(), c.getNetPrice(), c.getFrequencyOfPayment(), c.isReported(), c.getServiceList());
+        super.setObjectToChange(objectToChange);
+    }
+
+    @Override
+    public LocalDate getObjectToChange() {
+        return (LocalDate)this.objectToChange;
     }
 }

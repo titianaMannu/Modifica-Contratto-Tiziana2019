@@ -9,9 +9,8 @@ public class ModificationFactory {
      */
     public static synchronized ModificationFactory getInstance() {
         if (ourInstance == null)
-            return new ModificationFactory();
-        else
-            return ourInstance;
+            ourInstance = new ModificationFactory();
+        return ourInstance;
     }
 
     private ModificationFactory() {
@@ -19,24 +18,29 @@ public class ModificationFactory {
     }
 
     /**
-     *
-     * @param reasonWhy String
      * @param objectToChange Object
      * @param inType TypeOfModification
      * @return Modification
      */
-    public Modification createProduct(String reasonWhy, Object objectToChange, TypeOfModification inType){
-        switch (inType){
-            case ADD_SERVICE:
-                return new AddServiceModification(reasonWhy, objectToChange);
-            case REMOVE_SERVICE:
-                return  new RemoveServiceModification(reasonWhy, objectToChange);
-            case CHANGE_PAYMENTMETHOD:
-                return new PaymentMethodModification(reasonWhy, objectToChange);
-            case CHANGE_TERMINATIONDATE:
-                return  new TerminationDateModification(reasonWhy, objectToChange);
-            default:
-                return null;
+    public Modification createProduct(Object objectToChange, TypeOfModification inType){
+        try {
+            switch (inType) {
+                case ADD_SERVICE:
+                    return new AddServiceModification(objectToChange);
+                case REMOVE_SERVICE:
+                    return new RemoveServiceModification(objectToChange);
+                case CHANGE_PAYMENTMETHOD:
+                    return new PaymentMethodModification(objectToChange);
+                case CHANGE_TERMINATIONDATE:
+                    return new TerminationDateModification(objectToChange);
+                default:
+                    return null;
+            }
+
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return  null;
         }
+
     }
 }

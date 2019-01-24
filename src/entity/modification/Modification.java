@@ -2,19 +2,24 @@ package entity.modification;
 import Beans.Contract;
 
 public abstract class Modification {
-    protected  String reasonWhy;
     protected Object objectToChange;
 
-    public Modification(String reasonWhy, Object objectToChange){
-        this.reasonWhy = reasonWhy;
+    public Modification(Object objectToChange) throws  IllegalArgumentException{
+        this.setObjectToChange(objectToChange);
+    }
+
+    /**
+     * @param contract : Contract
+     * @return true if the Modification is compatible with the contract; else return false
+     */
+    public abstract boolean validate(Contract contract);
+
+
+    public void setObjectToChange(Object objectToChange) throws IllegalArgumentException{
+        if (objectToChange == null) throw new IllegalStateException("objectTochange hat to be not null");
         this.objectToChange = objectToChange;
     }
 
-    public abstract Contract update(Contract contract);
-
-    public String getReasonWhy() {
-        return reasonWhy;
-    }
 
     public Object getObjectToChange() {
         return objectToChange;
@@ -22,7 +27,7 @@ public abstract class Modification {
 
     @Override
     public String toString(){
-        return  objectToChange.toString() + "  sovrascrive l'originale perché: " + reasonWhy;
+        return  objectToChange.toString();
     }
 
 

@@ -1,44 +1,38 @@
 package entity.modification;
-
 import Beans.Contract;
 import entity.OptionalService;
 
 import java.util.List;
 
-public class RemoveServiceModification extends Modification{
 
-    public RemoveServiceModification(String description, Object objectToChange){
-        super(description, objectToChange);
-        try {
-            if (!(objectToChange instanceof OptionalService)) {
-                throw new IllegalArgumentException("*******Argument must be a  Service instance*******\n");
-            }
+public class RemoveServiceModification extends Modification {
 
-        }catch (IllegalArgumentException e){
-            e.printStackTrace();
-            //TODO gestione dell'errore in modo opportuno
-            System.exit(1);
+    public RemoveServiceModification(Object objectToChange) throws IllegalArgumentException {
+        super(objectToChange);
+        if (!(objectToChange instanceof OptionalService)) {
+            throw new IllegalArgumentException("*******Argument must be a  Service instance*******\n");
         }
+
     }
 
-    /**
-     * Non potendo modificare direttamente l'entità contratto se ne deve instanziare una nuova con i parametri modificati
-     * TODO controllo degli errori
-     * @param c
-     * @return
-     */
     @Override
-    public Contract update(Contract c) {
-        List<OptionalService> newList = c.getServiceList();
-        if (!newList.contains(this.objectToChange)) {
-            //nothing to change
-            return c;
+    public void setObjectToChange(Object objectToChange) throws IllegalArgumentException {
+        if (!(objectToChange instanceof OptionalService)) {
+            throw new IllegalArgumentException("*******Argument must be a  Service instance*******\n");
         }
-        OptionalService service = newList.remove(newList.indexOf(objectToChange));
-        return new Contract(c.getContractId(), c.isExipired(), c.getInitDate(), c.getTerminationDate(),
-                c.getPaymentMethod(), c.getTenantNickname(), c.getRenterNickname(), c.getTenantCF(), c.getRenterCF(),
-                c.getGrossPrice() - service.getServicePrice(), c.getNetPrice(), c.getFrequencyOfPayment(),
-                c.isReported(), newList);
+        super.setObjectToChange(objectToChange);
+    }
 
+    @Override
+    public OptionalService getObjectToChange() {
+        return  (OptionalService)super.getObjectToChange();
+    }
+
+    @Override
+    public boolean validate(Contract contract) {
+        List<OptionalService> newList = contract.getServiceList();
+        if (!newList.contains(this.objectToChange))
+            return false;
+        return true;
     }
 }

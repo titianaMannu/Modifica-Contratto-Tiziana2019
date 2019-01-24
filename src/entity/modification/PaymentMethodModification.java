@@ -1,39 +1,34 @@
 package entity.modification;
-
 import Beans.Contract;
 import entity.TypeOfPayment;
 
 public class PaymentMethodModification extends Modification {
 
-    public PaymentMethodModification(String reasonWhy, Object objectToChange){
-        super(reasonWhy, objectToChange);
-        try {
-            if (!(objectToChange instanceof TypeOfPayment)) {
-                throw new IllegalArgumentException("*******Argument must be a TypeOfPayment instance*******\n");
-            }
-
-        }catch (IllegalArgumentException e){
-            e.printStackTrace();
-            //TODO gestione dell'errore in modo opportuno
-            System.exit(1);
+    public PaymentMethodModification(Object objectToChange) throws IllegalArgumentException{
+        super(objectToChange);
+        if (!(objectToChange instanceof TypeOfPayment)) {
+            throw new IllegalArgumentException("*******Argument must be a TypeOfPayment instance*******\n");
         }
-
-
     }
-    /**
-     * Non potendo modificare direttamente l'entità contratto se ne deve instanziare una nuova con i parametri modificati
-     * TODO controllo degli errori
-     * @param c
-     * @return
-     */
+
     @Override
-    public Contract update(Contract c){
-        if (c.getPaymentMethod().equals(objectToChange)){
-            //nothing to change
-            return c;
+    public boolean validate(Contract contract) {
+        if (contract.getPaymentMethod().equals(this.getObjectToChange()))
+            return false;
+        return true;
+    }
+
+    @Override
+    public void setObjectToChange(Object objectToChange) throws IllegalArgumentException {
+        if (!(objectToChange instanceof TypeOfPayment)) {
+            throw new IllegalArgumentException("*******Argument must be a TypeOfPayment instance*******\n");
         }
-        return new Contract(c.getContractId(), c.isExipired(), c.getInitDate(), c.getTerminationDate(),
-                (TypeOfPayment) objectToChange, c.getTenantNickname(), c.getRenterNickname(), c.getTenantCF(), c.getRenterCF(),
-                c.getGrossPrice(), c.getNetPrice(), c.getFrequencyOfPayment(), c.isReported(), c.getServiceList());
+        super.setObjectToChange(objectToChange);
+    }
+
+    @Override
+    public TypeOfPayment getObjectToChange() {
+        return (TypeOfPayment)this.objectToChange;
     }
 }
+
