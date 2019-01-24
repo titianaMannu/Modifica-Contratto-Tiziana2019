@@ -54,7 +54,8 @@ public class RemoveServiceModfcDao implements ModificationDao {
     }
 
     @Override
-    public boolean insertModification(Modification modification, RequestForModification request) {
+    public boolean insertModification( RequestForModification request) {
+        Modification modification = request.getModification();
         if (! (modification instanceof RemoveServiceModification))
             throw new IllegalArgumentException("Argument had to be AddServiceModificationType");
 

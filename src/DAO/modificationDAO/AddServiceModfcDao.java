@@ -53,7 +53,8 @@ public class AddServiceModfcDao implements ModificationDao {
     }
 
     @Override
-    public boolean insertModification(Modification modification, RequestForModification request)throws IllegalArgumentException {
+    public boolean insertModification(RequestForModification request)throws IllegalArgumentException {
+        Modification modification = request.getModification();
         if (! (modification instanceof AddServiceModification))
             throw new IllegalArgumentException("Argument had to be AddServiceModificationType");
 

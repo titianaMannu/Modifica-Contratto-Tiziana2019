@@ -46,8 +46,9 @@ public class TerminationDateModfcDao implements ModificationDao {
     }
 
     @Override
-    public boolean insertModification(Modification modification, RequestForModification request)
+    public boolean insertModification(RequestForModification request)
             throws IllegalArgumentException{
+        Modification modification = request.getModification();
         if (! (modification instanceof TerminationDateModification))
             throw new IllegalArgumentException("Argument had to be AddServiceModificationType");
 
