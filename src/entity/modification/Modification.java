@@ -3,8 +3,10 @@ import Beans.Contract;
 
 public abstract class Modification {
     protected Object objectToChange;
+    protected  int idModification;
 
     public Modification(Object objectToChange) throws  IllegalArgumentException{
+        this.idModification = -1;
         this.setObjectToChange(objectToChange);
     }
 
@@ -20,6 +22,9 @@ public abstract class Modification {
         this.objectToChange = objectToChange;
     }
 
+    public int getIdModification() {
+        return idModification;
+    }
 
     public Object getObjectToChange() {
         return objectToChange;
