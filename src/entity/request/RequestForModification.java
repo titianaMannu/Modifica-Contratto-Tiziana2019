@@ -2,31 +2,50 @@ package entity.request;
 
 import Beans.Contract;
 import entity.modification.Modification;
+import entity.modification.ModificationFactory;
+import entity.modification.TypeOfModification;
+
 import java.time.LocalDate;
 
-/**
- *ContectStateVM
- */
 
 public class RequestForModification {
-    private State currentState;
     private String senderNickname;
     private String receiverNickname;
+    private String reasonWhy;
     private LocalDate dateOfSubmission;
+    private RequestStatus status;
+    private int requestId;
+    private Contract contract;
+    private TypeOfModification type;
+    private Modification modification;
 
     /**
      * Il controllo sui parametri viene fatto nelle funzioni setter (Incapsulamento della logica i controllo ui dati)
      * Per rendere le entità il più autonome possibili
      * @param c : Contract
-     * @param modfc : Modification
      * @param sender : String
+     * @param date
      */
-    public RequestForModification(Contract c, Modification modfc, String sender) throws  IllegalArgumentException{
-        this.currentState = new PendingState(c, modfc); // non appena creata la proposta questa deve essere pending
-        this.dateOfSubmission = LocalDate.now(); //La data della proposta è quella corrente
-        this.setSenderReceiver(sender, currentState.getContract());
+    public RequestForModification(Contract c, TypeOfModification type, Object obj, String sender, String reasonWhy,
+                                  LocalDate date) throws  IllegalArgumentException, IllegalStateException{
+
+        buildModification(obj, type);
+        if (c == null)
+            throw new IllegalArgumentException();
+        setType(type);
+        setReasonWhy(reasonWhy);
+        setDateOfSubmission(date);
+        setSenderReceiver(sender, c);
     }
 
+
+    public void buildModification(Object obj, TypeOfModification type) throws IllegalArgumentException{
+        Modification modification = ModificationFactory.getInstance().createProduct(obj, type);
+        if (modification == null){
+            throw new IllegalStateException();
+        }
+        this.modification = modification;
+    }
 
     public void setSenderReceiver(String sender, Contract c) throws IllegalArgumentException{
         // controllo sui dati
@@ -45,37 +64,55 @@ public class RequestForModification {
 
     }
 
-    /**
-     * Normale avanzamento di stato nell'happy scenario
-     */
-    public void forward(){
-        setState(this.currentState.forward(this));
+
+    private void setDateOfSubmission(LocalDate dateOfSubmission) {
+        if (dateOfSubmission != null)
+            this.dateOfSubmission = dateOfSubmission;
+        else
+            this.dateOfSubmission = LocalDate.now();
     }
 
-    /**
-     *Avanzamento di stato nella direzione di decline o  expired
-     */
-    public void  decline(){
-        setState(this.currentState.decline(this));
-    }
 
     /**
-     * state method has to be private
-     * if not,  the currentState could be corrupted
-     * @param st : State
+     * se reasonwhy è null o non specificato allora viene inserito un messaggio di default
+     * @param reasonWhy
      */
-    private void setState(State st){
-        this.currentState = st;
+    public void setReasonWhy(String reasonWhy){
+        if (reasonWhy != null && !reasonWhy.isEmpty())
+            this.reasonWhy = reasonWhy;
+        else
+            this.reasonWhy = "L'utente non ha specificato una motivazione.";
     }
 
-    public State getCurrentState() {
-        return currentState;
+    public void setType(TypeOfModification type) throws IllegalArgumentException{
+        if( type == null)
+            throw new IllegalArgumentException();
+        this.type = type;
+    }
+
+    public RequestStatus getStatus() {
+        return status;
+    }
+
+    public TypeOfModification getType() {
+        return type;
+    }
+
+    public Modification getModification() {
+        return modification;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public int getRequestId() {
+        return requestId;
     }
 
     @Override
     public String toString() {
         return "RequestForModification{" +
-                "currentState=" + currentState +
                 ", senderNickname='" + senderNickname + '\'' +
                 ", receiverNickname='" + receiverNickname + '\'' +
                 ", dateOfSubmission=" + dateOfSubmission +
