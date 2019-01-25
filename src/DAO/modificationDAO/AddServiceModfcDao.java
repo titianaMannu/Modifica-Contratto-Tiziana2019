@@ -1,5 +1,6 @@
 package DAO.modificationDAO;
 
+import Beans.Contract;
 import DAO.C3poDataSource;
 import entity.OptionalService;
 import entity.modification.AddServiceModification;
@@ -7,8 +8,11 @@ import entity.modification.Modification;
 import entity.modification.ModificationFactory;
 import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
+import entity.request.RequestStatus;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AddServiceModfcDao extends RequestForModificationDao {
@@ -26,9 +30,11 @@ public class AddServiceModfcDao extends RequestForModificationDao {
     }
 
     @Override
-    public boolean updateContract(RequestForModification request)throws IllegalArgumentException {
+    public boolean updateContract(RequestForModification request)throws IllegalArgumentException, IllegalStateException{
+        if (request.getStatus() != RequestStatus.ACCEPTED)
+            throw new IllegalStateException("Request is not accepted yet\n");
         if (! (request.getModification() instanceof AddServiceModification))
-            throw new IllegalArgumentException("Argument had to be AddServiceModificationType");
+            throw new IllegalArgumentException("Argument had to be AddServiceModificationType\n");
 
         AddServiceModification modification = (AddServiceModification)request.getModification();
         OptionalService service = modification.getObjectToChange();
@@ -143,5 +149,47 @@ public class AddServiceModfcDao extends RequestForModificationDao {
         return null;
     }
 
+    /**
+     * ritorna una lista di tutte le richieste di tipo ADD_SERVICE corrispondenti alla coppia (contract, sender)
+     * Viene ritornato un elenco completo indipendentemente dallo stato
+     * @param contract
+     * @param sender
+     * @return
+     */
+    @Override
+    public List<RequestForModification> getSubmits(Contract contract, String sender) {
+        List<RequestForModification> list = new ArrayList<>();
+        String sql = "select  dateOfSubmission, reasonWhy, idRequest\n" +
+                "from requestForModification\n" +
+                "where  (contract, senderNickname, type) in ((?, ?, ?))";
+        try(Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
+            st.setInt(1, contract.getContractId());
+            st.setString(2, sender);
+            st.setInt(3, TypeOfModification.ADD_SERVICE.getValue());
+            ResultSet res = st.executeQuery();
+            while(res.next()){
+                //tipo di modifica è di tipo addService in questo caso
+                Modification modfc = getModification(res.getInt(3), contract.getContractId());
+                RequestForModification request = new RequestForModification(contract, TypeOfModification.ADD_SERVICE,
+                        modfc.getObjectToChange(),sender, res.getString(2), res.getDate(1).toLocalDate());
+                //aggiunta della richiesta alla lista
+                list.add(request);
+            }
+        }catch (SQLException | IllegalArgumentException e) {
+            e.printStackTrace();
+            //se ho un'eccezione quello che si vuole è ritornare i dati però avere coscienza che c'è stato un errore
+            //allora ritorno una lista truncate che termina con null che in questo tipo di lista non dovrebbe esserci
+            list.add(null);
+        }
+        finally {
+            //ritorno ugualmente la lista
+            return list;
+        }
+    }
 
+
+    @Override
+    List<RequestForModification> getRequests(Contract contract, String receiver) {
+        return null;
+    }
 }
