@@ -1,15 +1,16 @@
 package DAO.modificationDAO;
 
-import Beans.Contract;
 import DAO.C3poDataSource;
 import entity.TypeOfPayment;
 import entity.modification.Modification;
+import entity.modification.ModificationFactory;
 import entity.modification.PaymentMethodModification;
+import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
 
 import java.sql.*;
 
-public class PaymentMethodModfcDao implements ModificationDao {
+public class PaymentMethodModfcDao extends RequestForModificationDao {
 
     private static PaymentMethodModfcDao ourInstance = null;
 
@@ -24,17 +25,18 @@ public class PaymentMethodModfcDao implements ModificationDao {
     }
 
     @Override
-    public boolean updateContract(Contract c, Modification modification) throws  IllegalArgumentException {
-        if (! (modification instanceof PaymentMethodModification))
+    public boolean updateContract(RequestForModification request) throws  IllegalArgumentException {
+        if (! (request.getModification() instanceof PaymentMethodModification))
             throw new IllegalArgumentException("Argument had to be AddServiceModificationType");
 
         String sql ="update ActiveContract set paymentMethod = ?\n" +
                 "where idContract = ?";
 
-        TypeOfPayment type = (TypeOfPayment)modification.getObjectToChange();
+        PaymentMethodModification modification = (PaymentMethodModification) request.getModification();
+        TypeOfPayment type = modification.getObjectToChange();
         try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
             st.setInt(1, type.getValue());
-            st.setInt(2, c.getContractId());
+            st.setInt(2, request.getContract().getContractId());
             if (st.executeUpdate() == 1)
                 return true;
 
@@ -68,15 +70,17 @@ public class PaymentMethodModfcDao implements ModificationDao {
     }
 
     @Override
-    public boolean deleteModification(Modification modification) {
+    public boolean deleteModification(RequestForModification request) {
         return false;
     }
 
     @Override
-    public boolean validateModification(Modification modification, Contract contract) throws IllegalArgumentException{
-        if (!(modification instanceof PaymentMethodModification)) throw new IllegalArgumentException();
+    public boolean validateModification(RequestForModification request) throws IllegalArgumentException{
+        if (!(request.getModification() instanceof PaymentMethodModification)) throw new IllegalArgumentException();
+
+        PaymentMethodModification modification = (PaymentMethodModification) request.getModification();
         //prima controllo se avrebbe degli efetti sul contratto
-        if(!modification.validate(contract))
+        if(!modification.validate(request.getContract()))
             return false;
 
         String sql = "select count(paymentMethod) as numOfRequests\n" +
@@ -84,7 +88,7 @@ public class PaymentMethodModfcDao implements ModificationDao {
                 " && m.requestC = 2  where rm.status = 0";
 
         try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
-            st.setInt(1, contract.getContractId());
+            st.setInt(1, request.getContract().getContractId());
             ResultSet res = st.executeQuery();
             if (res.next())
                 return res.getInt("numOfRequests") == 0;
@@ -98,7 +102,23 @@ public class PaymentMethodModfcDao implements ModificationDao {
 
 
     @Override
-    public Modification getModification() {
+    public Modification getModification(int idRequest, int idContract) {
+        String sql = "select paymentMethod\n" +
+                "from PaymentMethodModification\n" +
+                "where requestId = ? && requestC = ?";
+        try(Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
+            st.setInt(1, idRequest);
+            st.setInt(2, idContract);
+            ResultSet res = st.executeQuery();
+            if (res.next())
+                return ModificationFactory.getInstance().createProduct(TypeOfPayment.valueOf(res.getInt(1)),
+                        TypeOfModification.CHANGE_PAYMENTMETHOD);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
+
 }

@@ -15,7 +15,7 @@ public class ModificationDaoFActory {
         // default constructor must be private because of we are using singleton pattern
     }
 
-    public ModificationDao createProduct(TypeOfModification inType){
+    public RequestForModificationDao createProduct(TypeOfModification inType){
         switch (inType){
             case ADD_SERVICE:
                 return AddServiceModfcDao.getInstance();

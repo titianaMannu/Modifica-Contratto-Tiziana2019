@@ -1,15 +1,16 @@
 package DAO.modificationDAO;
 
-import Beans.Contract;
 import DAO.C3poDataSource;
 import entity.modification.Modification;
+import entity.modification.ModificationFactory;
 import entity.modification.TerminationDateModification;
+import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
 
 import java.sql.*;
 import java.time.LocalDate;
 
-public class TerminationDateModfcDao implements ModificationDao {
+public class TerminationDateModfcDao extends RequestForModificationDao {
 
     private static TerminationDateModfcDao ourInstance = null;
 
@@ -24,17 +25,18 @@ public class TerminationDateModfcDao implements ModificationDao {
     }
 
     @Override
-    public boolean updateContract(Contract c, Modification modification) throws IllegalArgumentException{
-        if (! (modification instanceof TerminationDateModification))
+    public boolean updateContract(RequestForModification request) throws IllegalArgumentException{
+        if (! (request.getModification() instanceof TerminationDateModification))
             throw new IllegalArgumentException("Argument had to be AddServiceModificationType");
 
-        LocalDate date = (LocalDate)modification.getObjectToChange();
+        TerminationDateModification modification = (TerminationDateModification) request.getModification();
+        LocalDate date = modification.getObjectToChange();
         String sql ="update ActiveContract set terminationDate = ?\n" +
                 "where idContract = ?";
 
         try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
             st.setDate(1, Date.valueOf(date));
-            st.setInt(2, c.getContractId());
+            st.setInt(2, request.getContract().getContractId());
             if (st.executeUpdate() == 1)
                 return true;
 
@@ -70,17 +72,19 @@ public class TerminationDateModfcDao implements ModificationDao {
     }
 
     @Override
-    public boolean deleteModification(Modification modification) {
+    public boolean deleteModification(RequestForModification request) {
         return false;
     }
 
     @Override
-    public boolean validateModification(Modification modification, Contract contract) throws IllegalArgumentException{
-        if (!(modification instanceof TerminationDateModification)) {
+    public boolean validateModification(RequestForModification request) throws IllegalArgumentException{
+        if (!(request.getModification() instanceof TerminationDateModification)) {
             throw new IllegalArgumentException();
         }
+
+        TerminationDateModification modification = (TerminationDateModification) request.getModification();
         //prima controllo se avrebbe degli efetti sul contratto
-        if (!modification.validate(contract))
+        if (!modification.validate(request.getContract()))
             return false;
 
         String sql = "select count(newDate) as numOfRequests\n" +
@@ -88,7 +92,7 @@ public class TerminationDateModfcDao implements ModificationDao {
                 " && m.requestC = ?\nwhere rm.status = 0" ;
 
         try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
-            st.setInt(1, contract.getContractId());
+            st.setInt(1, request.getContract().getContractId());
             ResultSet res = st.executeQuery();
 
             if (res.next())
@@ -103,7 +107,23 @@ public class TerminationDateModfcDao implements ModificationDao {
     }
 
     @Override
-    public Modification getModification() {
+    public Modification getModification(int idRequest, int idContract) {
+        String sql = "select newDate\n" +
+                "from TerminationDateModification\n" +
+                "where requestId = ? && requestC = ?";
+        try(Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
+            st.setInt(1, idRequest);
+            st.setInt(2, idContract);
+            ResultSet res = st.executeQuery();
+            if (res.next())
+                return ModificationFactory.getInstance().createProduct(res.getDate(1).toLocalDate(),
+                        TypeOfModification.CHANGE_TERMINATIONDATE);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
+
 }
