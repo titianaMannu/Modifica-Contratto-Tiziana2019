@@ -24,7 +24,7 @@ public class C3poDataSource {
         }
     }
 
-    public static Connection getConnection() throws SQLException {
+    public static synchronized Connection getConnection() throws SQLException {
         return cpds.getConnection();
     }
 
