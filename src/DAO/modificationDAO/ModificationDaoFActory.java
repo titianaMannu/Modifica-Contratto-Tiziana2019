@@ -5,7 +5,7 @@ public class ModificationDaoFActory {
 
     private static ModificationDaoFActory ourInstance = null;
 
-    public static ModificationDaoFActory getInstance() {
+    public static synchronized  ModificationDaoFActory getInstance() {
         if (ourInstance == null)
             ourInstance = new ModificationDaoFActory();
         return ourInstance;
