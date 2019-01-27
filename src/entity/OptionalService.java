@@ -3,13 +3,21 @@ package entity;
 import java.util.Objects;
 
 public class OptionalService {
+    private int serviceId;
     private  String serviceName;
-    private String serviceDescription;
     private int servicePrice;
+    private String description;
 
-    public OptionalService(String serviceName, String serviceDescription, int servicePrice) {
+    public OptionalService(int serviceId, String serviceName, int servicePrice, String description) {
+        this.serviceId = serviceId;
         this.serviceName = serviceName;
-        this.serviceDescription = serviceDescription;
+        this.servicePrice = servicePrice;
+        this.description = description;
+    }
+
+    public OptionalService(int serviceId, String serviceName, int servicePrice) {
+        this.serviceId = serviceId;
+        this.serviceName = serviceName;
         this.servicePrice = servicePrice;
     }
 
@@ -17,8 +25,8 @@ public class OptionalService {
         return serviceName;
     }
 
-    public String getServiceDescription() {
-        return serviceDescription;
+    public int getServiceId() {
+        return serviceId;
     }
 
     public int getServicePrice() {
@@ -29,7 +37,7 @@ public class OptionalService {
     public String toString() {
         return "OptionalService{" +
                 "serviceName='" + serviceName + '\'' +
-                ", serviceDescription='" + serviceDescription + '\'' +
+                ", serviceDescription='" +
                 ", servicePrice=" + servicePrice +
                 '}';
     }
