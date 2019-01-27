@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 public class RequestBean implements Serializable {
     //TODO controllo sui dai!
+    private String sender;
     private TypeOfModification type;
     private Object objectToChange;
     private String reasonWhy;
@@ -16,7 +17,8 @@ public class RequestBean implements Serializable {
     private int IdRequest;
 
     public RequestBean(TypeOfModification type, Object objectToChange, String reasonWhy, LocalDate date,
-                       RequestStatus status, int idRequest) {
+                       RequestStatus status, int idRequest, String sender) {
+        this.sender = sender;
         this.type = type;
         this.objectToChange = objectToChange;
         this.reasonWhy = reasonWhy;

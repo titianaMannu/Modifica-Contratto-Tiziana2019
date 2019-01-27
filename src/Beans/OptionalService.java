@@ -1,4 +1,4 @@
-package entity;
+package Beans;
 
 import java.util.Objects;
 

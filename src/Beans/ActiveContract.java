@@ -1,6 +1,5 @@
 package Beans;
 
-import entity.OptionalService;
 import entity.TypeOfPayment;
 
 import java.io.Serializable;
