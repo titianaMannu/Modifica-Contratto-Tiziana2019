@@ -15,7 +15,7 @@ public class ModificationDaoFActory {
         // default constructor must be private because of we are using singleton pattern
     }
 
-    public RequestForModificationDao createProduct(TypeOfModification inType){
+    public RequestForModificationDao createProduct(TypeOfModification inType) throws IllegalArgumentException{
         switch (inType){
             case ADD_SERVICE:
                 return AddServiceModfcDao.getInstance();
@@ -26,7 +26,7 @@ public class ModificationDaoFActory {
             case CHANGE_TERMINATIONDATE:
                 return TerminationDateModfcDao.getInstance();
             default:
-                return null;
+                throw new IllegalArgumentException("tipologia di modifica non prevista\n");
         }
 
     }

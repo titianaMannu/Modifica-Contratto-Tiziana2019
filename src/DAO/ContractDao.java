@@ -1,7 +1,7 @@
 package DAO;
 
 import Beans.ActiveContract;
-import entity.OptionalService;
+import Beans.OptionalService;
 import entity.TypeOfPayment;
 
 import java.sql.Connection;
