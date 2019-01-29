@@ -67,44 +67,46 @@ public class TerminationDateModfcDao extends RequestForModificationDao {
         if (! (modification instanceof TerminationDateModification))
             throw new IllegalArgumentException("Argomento della richiesta deve essere di tipo TerminationDateModification");
 
+        ;
         String sql = "insert into TerminationDateModification(requestId, requestC, newDate) values (?, ?, ?)" ;
-        try(Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql) ){
-            if(!conn.getAutoCommit())
+        try(Connection conn = C3poDataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            if (!conn.getAutoCommit())
                 conn.setAutoCommit(true);
-            LocalDate date = (LocalDate)modification.getObjectToChange();
-            st.setInt(1, request.getRequestId());
-            st.setInt(2, request.getActiveContract().getContractId());
-            st.setDate(3, Date.valueOf(date));
-            throw new IllegalStateException("Non è possibile inserire la modifica: " +
-                    "controlla lo stato della richiesta\n");
-        }catch (SQLException e){
-            e.printStackTrace();
-            throw e;
+            try ( PreparedStatement st = conn.prepareStatement(sql)) {
+                stmt.execute("SET FOREIGN_KEY_CHECKS=0"); //disabilito il controllo delle FK in fase di inserimento
+
+                LocalDate date = (LocalDate) modification.getObjectToChange();
+                st.setInt(1, request.getRequestId());
+                st.setInt(2, request.getActiveContract().getContractId());
+                st.setDate(3, Date.valueOf(date));
+                if (st.executeUpdate() != 1) //già esiste questa modifica
+                    throw new IllegalStateException("Non è possibile inserire la modifica: " +
+                            "controlla lo stato della richiesta\n");
+            } catch (SQLException | IllegalStateException e) {
+                e.printStackTrace();
+                throw e;
+            }finally {
+                stmt.execute("SET FOREIGN_KEY_CHECKS=1"); //riabilito il controllo delle FK
+            }
         }
     }
 
 
     /**
      * controlla che non ci siano altre richieste di modifica uguali (PENDING) per il contratto
+     * @param request
      */
     @Override
-    public void validateRequest(RequestForModification request)
-            throws IllegalArgumentException, NullPointerException, ValidationException, SQLException{
+    public boolean validateRequest(RequestForModification request)
+            throws IllegalArgumentException, NullPointerException, SQLException{
 
         if (request == null ) throw new NullPointerException("Specificare una richiesta\n");
         if (!(request.getModification() instanceof TerminationDateModification)) {
             throw new IllegalArgumentException();
         }
-
-        TerminationDateModification modification = (TerminationDateModification) request.getModification();
-        //prima controllo se avrebbe degli efetti sul contratto
-        if (!modification.validate(request.getActiveContract()))
-            throw new ValidationException("Specificare una modifica significativa\n");
-
         String sql = "select count(newDate) as numOfRequests\n" +
                 "from TerminationDateModification as m join requestForModification as rm on m.requestId = rm.idRequest" +
                 " && m.requestC = ?\nwhere rm.status = 0" ;
-
         try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
             if (!conn.getAutoCommit())
                 conn.setAutoCommit(true);
@@ -112,12 +114,13 @@ public class TerminationDateModfcDao extends RequestForModificationDao {
             ResultSet res = st.executeQuery();
             if (res.next()) {
                 if (res.getInt("numOfRequests") > 0)
-                    throw new ValidationException("Esiste già una richiesta di modifica analoga per il contratto\n");
+                    return false;
             }
         }catch (SQLException e){
             e.printStackTrace();
             throw e;
         }
+        return true;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package DAO;
 
 import Beans.ActiveContract;
-import Beans.OptionalService;
+import entity.OptionalService;
 import entity.TypeOfPayment;
 
 import java.sql.Connection;
@@ -24,7 +24,7 @@ public class ContractDao {
 
     public ActiveContract getContract(int contractId){
         ActiveContract activeContract = null;
-        String sql = "select idContract,initDate, terminationDate, paymentMethod, tenantNickname, " +
+        String sql = "select  initDate, terminationDate, paymentMethod, tenantNickname, " +
                 "renterNickname, grossPrice, netPrice\nfrom ActiveContract\n" +
                 "where idContract = ?";
         try(Connection conn = C3poDataSource.getConnection()){
@@ -34,7 +34,7 @@ public class ContractDao {
                     st.setInt(1, contractId);
                     ResultSet res = st.executeQuery();
                     if (res.next()){
-                        activeContract = new ActiveContract(res.getInt("idContract"),res.getDate("initDate").toLocalDate(),
+                        activeContract = new ActiveContract(contractId,res.getDate("initDate").toLocalDate(),
                                 res.getDate("terminationDate").toLocalDate(), TypeOfPayment.valueOf(res.getInt("paymentMethod")),
                                 res.getString("tenantNickname"),res.getString("renterNickname"), res.getInt("grossPrice"),
                                 res.getInt("netPrice"), getServices(contractId));

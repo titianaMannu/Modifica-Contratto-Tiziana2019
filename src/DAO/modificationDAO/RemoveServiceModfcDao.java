@@ -3,7 +3,7 @@ package DAO.modificationDAO;
 import Beans.ActiveContract;
 import Beans.RequestBean;
 import DAO.C3poDataSource;
-import Beans.OptionalService;
+import entity.OptionalService;
 import entity.modification.Modification;
 import entity.modification.ModificationFactory;
 import entity.modification.RemoveServiceModification;
@@ -11,7 +11,6 @@ import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
 import entity.request.RequestStatus;
 
-import javax.xml.bind.ValidationException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,16 +46,14 @@ public class RemoveServiceModfcDao extends RequestForModificationDao {
         RemoveServiceModification modification = (RemoveServiceModification)request.getModification();
         OptionalService service = modification.getObjectToChange();
         String sql_1, sql_2;
-        sql_1= "update OptionalService set ActiveContract_idContract = ?\n" +
-                "where idService = ?";
+        sql_1= "update OptionalService set ActiveContract_idContract = -1 where idService = ?";
         sql_2 = "update ActiveContract set grossPrice = grossPrice - ?\n" +
                 "where idContract = ?";
-        try (Connection conn = C3poDataSource.getConnection()) {
+        try (Connection conn = C3poDataSource.getConnection(); Statement stmt = conn.createStatement()) {
             conn.setAutoCommit(false);
+            stmt.execute("SET FOREIGN_KEY_CHECKS=0");
             try (PreparedStatement st1 = conn.prepareStatement(sql_1); PreparedStatement st2 = conn.prepareStatement(sql_2)) {
-
-                st1.setInt(1, request.getActiveContract().getContractId());
-                st1.setInt(2, service.getServiceId());
+                st1.setInt(1 , service.getServiceId());
                 st2.setInt(1, service.getServicePrice());
                 st2.setInt(2, request.getActiveContract().getContractId());
                 if (!(st1.executeUpdate() == 1 && st2.executeUpdate() == 1))
@@ -67,6 +64,8 @@ public class RemoveServiceModfcDao extends RequestForModificationDao {
                 conn.rollback();
                 conn.setAutoCommit(true);
                 throw e;
+            }finally {
+                stmt.execute("SET FOREIGN_KEY_CHECKS=1");
             }
             conn.commit();
             conn.setAutoCommit(true);
@@ -94,17 +93,27 @@ public class RemoveServiceModfcDao extends RequestForModificationDao {
 
         OptionalService service = (OptionalService) modification.getObjectToChange();
         String sql = "insert into RemoveServiceModification(requestId, requestC, service) values (?, ?, ?)";
-        try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)) {
-            if(!conn.getAutoCommit())
+        try (Connection conn = C3poDataSource.getConnection();Statement stmt = conn.createStatement()){
+            if (!conn.getAutoCommit())
                 conn.setAutoCommit(true);
-            //operazione singola non necessita di fare rallback in caso di errore
-            st.setInt(1, request.getRequestId());
-            st.setInt(2, request.getActiveContract().getContractId());
-            st.setInt(3, service.getServiceId());
-            if (st.executeUpdate() != 1) //già esiste questa modifica
-                throw new IllegalStateException("Non è possibile inserire la modifica: " +
-                        "controlla lo stato della richiesta\n");
-        } catch (SQLException e) {
+            stmt.execute("SET FOREIGN_KEY_CHECKS=0"); //disabilito il controllo delle FK in fase di inserimento
+
+            try ( PreparedStatement st = conn.prepareStatement(sql)) {
+                //operazione singola non necessita di fare rallback in caso di errore
+                st.setInt(1, request.getRequestId());
+                st.setInt(2, request.getActiveContract().getContractId());
+                st.setInt(3, service.getServiceId());
+                if (st.executeUpdate() != 1) //già esiste questa modifica
+                    throw new IllegalStateException("Non è possibile inserire la modifica: " +
+                            "controlla lo stato della richiesta\n");
+            } catch (SQLException | IllegalStateException e) {
+                e.printStackTrace();
+                throw e;
+            }finally {
+                //comando critico che viene eseguito anche se viene rilanciata l'eccezione catturata
+                stmt.execute("SET FOREIGN_KEY_CHECKS=1"); //riabilito il controllo delle FK
+            }
+        }catch (SQLException e){
             e.printStackTrace();
             throw e;
         }
@@ -112,21 +121,17 @@ public class RemoveServiceModfcDao extends RequestForModificationDao {
 
     /**
      * controlla che non ci siano altre richieste di modifica uguali (PENDING) per il contratto
+     * @param request
      */
     @Override
-    public void validateRequest(RequestForModification request)
-            throws IllegalArgumentException, NullPointerException, ValidationException, SQLException {
+    public boolean validateRequest(RequestForModification request)
+            throws IllegalArgumentException, NullPointerException,SQLException {
 
         if (request == null ) throw new NullPointerException("Specificare una richiesta\n");
-
         if (! (request.getModification() instanceof RemoveServiceModification))
             throw new IllegalArgumentException("Argomento della richiesta deve essere di tipo RemoveServiceModification\n");
 
         RemoveServiceModification modification = (RemoveServiceModification)request.getModification();
-        //prima controllo se avrebbe degli efetti sul contratto
-        if (!modification.validate(request.getActiveContract()))
-             throw new ValidationException("Specificare una modifica significativa\n");
-
         OptionalService service = modification.getObjectToChange();
         String sql = "select name as serviceName, price as servicePrice\n" +
                 "from RemoveServiceModification as m join requestForModification as rm on m.requestId = rm.idRequest " +
@@ -141,11 +146,12 @@ public class RemoveServiceModfcDao extends RequestForModificationDao {
             while(res.next())
                 if (service.getServiceName().equals(res.getString("serviceName"))
                         && service.getServicePrice() == res.getInt("servicePrice"))
-                    throw new ValidationException("Esiste già questa richiesta di modifica per il contratto\n");
+                    return false;
         }catch (SQLException e){
             e.printStackTrace();
             throw e;
         }
+        return true;
     }
 
     /**

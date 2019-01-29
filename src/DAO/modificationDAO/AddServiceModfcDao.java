@@ -3,7 +3,7 @@ package DAO.modificationDAO;
 import Beans.ActiveContract;
 import Beans.RequestBean;
 import DAO.C3poDataSource;
-import Beans.OptionalService;
+import entity.OptionalService;
 import entity.modification.AddServiceModification;
 import entity.modification.Modification;
 import entity.modification.ModificationFactory;
@@ -59,8 +59,7 @@ public class AddServiceModfcDao extends RequestForModificationDao {
                 st2.setInt(1, service.getServicePrice());
                 st2.setInt(2, request.getActiveContract().getContractId());
                 if (!(st1.executeUpdate() == 1 && st2.executeUpdate() == 1))
-                    throw new IllegalStateException("Non è possibile effettuare la modifica: " +
-                            "controlla lo stato del contratto\n");
+                    throw new IllegalStateException("Non è possibile effettuare la modifica\n");
             } catch (SQLException | IllegalStateException e) {
                 conn.rollback();
                 conn.setAutoCommit(true);
@@ -71,6 +70,7 @@ public class AddServiceModfcDao extends RequestForModificationDao {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw e;
         }
 
     }
@@ -80,7 +80,7 @@ public class AddServiceModfcDao extends RequestForModificationDao {
      */
     @Override
     public void insertModification(RequestForModification request)
-            throws IllegalArgumentException, NullPointerException, SQLException, IllegalStateException {
+            throws IllegalArgumentException, NullPointerException, SQLException, IllegalStateException{
 
         if (request == null) throw new NullPointerException("Specificare una richiesta\n");
 
@@ -90,21 +90,38 @@ public class AddServiceModfcDao extends RequestForModificationDao {
 
         OptionalService service = (OptionalService) modification.getObjectToChange();
         String sql_1 = "insert into AddServiceModification(requestId, requestC, service) values (?, ?, ?)";
-        String sql_2 = "insert into OptionalService(name, price) values (?, ?)";
+        String sql_2 = "insert into OptionalService(name, price, description) values (?, ?, ?)";
         try (Connection conn = C3poDataSource.getConnection()) {
             conn.setAutoCommit(false);
-            try (PreparedStatement st_1 = conn.prepareStatement(sql_1); PreparedStatement st_2 = conn.prepareStatement(sql_2)) {
-                //per l'inserimento del servizio
+            try (PreparedStatement st_1 = conn.prepareStatement(sql_1);
+                 PreparedStatement st_2 = conn.prepareStatement(sql_2, Statement.RETURN_GENERATED_KEYS);
+                 Statement stmt = conn.createStatement()) {
+
+                stmt.execute("SET FOREIGN_KEY_CHECKS=0"); //disabilito il controllo delle FK in fase di inserimento
+
+                //inserimento del servizio
                 st_2.setString(1, service.getServiceName());
                 st_2.setInt(2, service.getServicePrice());
-                //per l'inserimento della modifica
+                st_2.setString(3, service.getDescription());
+                //dopo l'inserimento deve risultare il cambiamento di 1 riga
+                st_2.executeUpdate();
+                ResultSet keys = st_2.getGeneratedKeys();
+                if (keys.next()) //idService generato automaticamente
+                    service.setServiceId(keys.getInt(1));
+                else throw new IllegalStateException("c'è stato un errore durante l'inserimento dell'oggetto" +
+                        " della modifica richiesta\n");
+
+                //inserimento della modifica stessa
                 st_1.setInt(1, request.getRequestId());
                 st_1.setInt(2, request.getActiveContract().getContractId());
                 st_1.setInt(3, service.getServiceId());
-                //dopo l'inserimento deve risultare il cambiamento di 1 riga per tabella
-                if (!(st_2.executeUpdate() == 1 && st_1.executeUpdate() == 1) )
+                //dopo l'inserimento deve risultare il cambiamento di 1 riga
+                if (st_1.executeUpdate() != 1)
                         throw new IllegalStateException("Non è possibile inserire la modifica: " +
-                                "controlla lo stato della richiesta\n");
+                              "controlla lo stato della richiesta\n");
+
+                stmt.execute("SET FOREIGN_KEY_CHECKS=1"); //riabilito il controllo delle FK
+
             } catch (SQLException | IllegalStateException e) {
                 conn.rollback();
                 conn.setAutoCommit(true);
@@ -121,26 +138,22 @@ public class AddServiceModfcDao extends RequestForModificationDao {
 
     /**
      * controlla che non ci siano altre richieste di modifica uguali (PENDING) per il contratto
+     * @param request
      */
     @Override
-    public void validateRequest(RequestForModification request)
-            throws IllegalArgumentException, NullPointerException, ValidationException, SQLException {
+    public boolean validateRequest(RequestForModification request)
+            throws IllegalArgumentException, NullPointerException, SQLException {
 
         if (request == null ) throw new NullPointerException("Specificare una richiesta\n");
         if (! (request.getModification() instanceof AddServiceModification))
             throw new IllegalArgumentException("Argomento deve essere di tipo AddServiceModification\n");
 
         AddServiceModification modification = (AddServiceModification)request.getModification();
-        //prima controllo se avrebbe degli efetti sul contratto
-        if (!modification.validate(request.getActiveContract()))
-            throw new ValidationException("Specificare una modifica significativa\n");
-
         OptionalService service =  modification.getObjectToChange();
         String sql = "select name as serviceName, price as servicePrice\n" +
                 "from AddServiceModification as m join requestForModification as rm on m.requestId = rm.idRequest " +
                 "&& m.requestC = ?\njoin OptionalService OS on m.service = OS.idService\n" +
                 "where rm.status = 0" ;
-
         try (Connection  conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
             if (!conn.getAutoCommit())
                 conn.setAutoCommit(true);
@@ -149,12 +162,13 @@ public class AddServiceModfcDao extends RequestForModificationDao {
             while(res.next())
                 if (service.getServiceName().equals(res.getString("serviceName"))
                         && service.getServicePrice() == res.getInt("servicePrice")){
-                    throw new ValidationException("Esiste già questa richiesta di modifica per il contratto\n");
+                   return false;
                 }
         }catch (SQLException e){
             e.printStackTrace();
             throw e;
         }
+        return true;
     }
 
     /**

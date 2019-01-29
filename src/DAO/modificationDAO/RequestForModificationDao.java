@@ -4,15 +4,11 @@ import Beans.ActiveContract;
 import Beans.RequestBean;
 import DAO.C3poDataSource;
 import entity.modification.Modification;
-import entity.modification.RemoveServiceModification;
 import entity.request.RequestForModification;
 import entity.request.RequestStatus;
 
 import javax.xml.bind.ValidationException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public abstract class RequestForModificationDao {
@@ -20,9 +16,10 @@ public abstract class RequestForModificationDao {
     /**
      * Applica la modifica contenuta nella richiesta al contratto
      * @param request : richiesta di modifica
-     * @return true se la transazione fa commit, false altrimenti
+     * todo test per ogni tipo
      */
-    public abstract void updateContract(RequestForModification request) throws SQLException;
+    public abstract void updateContract(RequestForModification request)
+            throws IllegalStateException, IllegalArgumentException, NullPointerException, SQLException;
 
     /**
      * inserisce la modifica nel DB
@@ -31,15 +28,17 @@ public abstract class RequestForModificationDao {
 
     /**
      * controlla che non ci siano altre richieste di modifica uguali (PENDING) per il contratto
-     * @return true se la  richiesta di modifica è applicabile, false altrimenti
+     *todo test per ogni tipologia
+     * @param request
      */
-    public abstract void validateRequest(RequestForModification request) throws ValidationException, SQLException;
+    public abstract boolean validateRequest(RequestForModification request)
+            throws IllegalArgumentException, NullPointerException, SQLException;
 
     public abstract Modification getModification(int contractId, int requestId);
 
     /**
      * Si occupa dell'eliminazione della richiesta (politica di eliminazione a cascata per la modifica corrispondente)
-     * @param request : richiesta da modificare
+     * todo test
     */
     public  void deleteRequest(RequestForModification request)
             throws IllegalStateException, NullPointerException, SQLException {
@@ -82,8 +81,9 @@ public abstract class RequestForModificationDao {
 
     /**
      * Si occupa dell'inserimento della richiesta e della modifica corrispondente
+     * todo test
      */
-    public void insertRequests(RequestForModification request)
+    public void insertRequest(RequestForModification request)
             throws IllegalArgumentException, NullPointerException, SQLException, IllegalStateException {
 
         if (request == null) throw new NullPointerException("Specificare una richiesta\n");
@@ -93,20 +93,23 @@ public abstract class RequestForModificationDao {
         try(Connection conn = C3poDataSource.getConnection()){
             conn.setAutoCommit(false);
             //altro blocco per poter gestire separatamente le situazioni di errore
-            try(PreparedStatement st = conn.prepareStatement(sql)){
+            try(PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
                 //preparazione dei dati
-                st.setInt(1, request.getRequestId());
+                st.setInt(1, request.getActiveContract().getContractId());
                 st.setDate(2, Date.valueOf(request.getDateOfSubmission()));
                 st.setString(3, request.getReasonWhy());
                 st.setInt(4, request.getType().getValue());
                 st.setString(5, request.getSenderNickname());
                 st.setString(6, request.getReceiverNickname());
                 //esecuzione dell'update
-                if (st.executeUpdate() != 1)  throw new IllegalStateException("Non è stato possibile inserire la richiesta," +
-                        " controlla se questa esiste già\n");
+                if (st.executeUpdate() != 1)  throw new IllegalStateException("Non è stato possibile inserire la richiesta\n");
+                ResultSet keys = st.getGeneratedKeys();
+                if (keys.next()) //idService generato automaticamente
+                    request.setRequestId(keys.getInt(1));
+
                 insertModification(request);
 
-            }catch (SQLException | IllegalArgumentException e){
+            }catch (SQLException | IllegalArgumentException  e){
                 // se l'operazione di tipo DML genera errore allora si deve riportare il DB in uno stato consistente
                 conn.rollback();
                 conn.setAutoCommit(true);

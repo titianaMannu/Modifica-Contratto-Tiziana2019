@@ -10,8 +10,6 @@ import entity.modification.PaymentMethodModification;
 import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
 import entity.request.RequestStatus;
-
-import javax.xml.bind.ValidationException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,43 +70,43 @@ public class PaymentMethodModfcDao extends RequestForModificationDao {
             throw new IllegalArgumentException("Argomento della richiesta deve essere di tipo PaymentMethodModification\n");
 
         String sql = "insert into PaymentMethodModification(requestId, requestC, paymentMethod) values (?, ?, ?)" ;
-        try(Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)) {
-            if(!conn.getAutoCommit())
+        try(Connection conn = C3poDataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            if (!conn.getAutoCommit())
                 conn.setAutoCommit(true);
-            TypeOfPayment type = (TypeOfPayment) modification.getObjectToChange();
-            st.setInt(1, request.getRequestId());
-            st.setInt(2, request.getActiveContract().getContractId());
-            st.setInt(3, type.getValue());
-            if (st.executeUpdate() != 1) //già esiste questa modifica
-                throw new IllegalStateException("Non è possibile inserire la modifica: " +
-                        "controlla lo stato della richiesta\n");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
+            stmt.execute("SET FOREIGN_KEY_CHECKS=0"); //disabilito il controllo delle FK in fase di inserimento
+            try(PreparedStatement st = conn.prepareStatement(sql)) {
+                TypeOfPayment type = (TypeOfPayment) modification.getObjectToChange();
+                st.setInt(1, request.getRequestId());
+                st.setInt(2, request.getActiveContract().getContractId());
+                st.setInt(3, type.getValue());
+                if (st.executeUpdate() != 1) //già esiste questa modifica
+                    throw new IllegalStateException("Non è possibile inserire la modifica: " +
+                            "controlla lo stato della richiesta\n");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw e;
+            }finally {
+                stmt.execute("SET FOREIGN_KEY_CHECKS=1"); //riabilito il controllo delle FK
+            }
         }
     }
 
 
     /**
      * controlla che non ci siano altre richieste di modifica uguali (PENDING) per il contratto
+     * @param request
      */
     @Override
-    public void validateRequest(RequestForModification request)
-            throws IllegalArgumentException, NullPointerException, ValidationException, SQLException{
+    public boolean validateRequest(RequestForModification request)
+            throws IllegalArgumentException, NullPointerException, SQLException{
 
         if (request == null ) throw new NullPointerException("Specificare una richiesta\n");
         if (!(request.getModification() instanceof PaymentMethodModification))
             throw new IllegalArgumentException("Argomento della richiesta deve essere di tipo PaymentMethodModification\n");
 
-        PaymentMethodModification modification = (PaymentMethodModification) request.getModification();
-        //prima controllo se avrebbe degli efetti sul contratto
-        if(!modification.validate(request.getActiveContract()))
-            throw new ValidationException("Specificare una modifica significativa\n");
-
         String sql = "select count(paymentMethod) as numOfRequests\n" +
                 "from PaymentMethodModification as m join requestForModification as rm on m.requestId = rm.idRequest" +
                 " && m.requestC = ?  where rm.status = 0";
-
         try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
             if (!conn.getAutoCommit() )
                 conn.setAutoCommit(true);
@@ -116,12 +114,13 @@ public class PaymentMethodModfcDao extends RequestForModificationDao {
             ResultSet res = st.executeQuery();
             if (res.next()) {
                 if (res.getInt("numOfRequests") > 0)
-                    throw new ValidationException("Esiste già una richiesta di modifica analoga per il contratto\n");
+                    return false;
             }
         }catch (SQLException e){
             e.printStackTrace();
             throw e;
         }
+        return true;
     }
 
 
