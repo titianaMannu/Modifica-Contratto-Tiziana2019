@@ -10,6 +10,7 @@ import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
 import entity.request.RequestStatus;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -18,16 +19,16 @@ import static org.junit.Assert.*;
 
 public class PaymentMethodTest {
 
-    private RequestForModificationDao requestDao = ModificationDaoFActory.getInstance().createProduct(TypeOfModification.CHANGE_PAYMENTMETHOD);
-    private ActiveContract contract = ContractDao.getInstance().getContract(1);
-    private RequestForModification request = new RequestForModification(contract, TypeOfModification.CHANGE_PAYMENTMETHOD,
+    private static RequestForModificationDao requestDao = ModificationDaoFActory.getInstance().createProduct(TypeOfModification.CHANGE_PAYMENTMETHOD);
+    private static ActiveContract contract = ContractDao.getInstance().getContract(1);
+    private static RequestForModification request = new RequestForModification(contract, TypeOfModification.CHANGE_PAYMENTMETHOD,
             TypeOfPayment.PAYPAL, "pippo", "", null, RequestStatus.PENDING);
     private RequestForModification request_bis = new RequestForModification(contract, TypeOfModification.CHANGE_PAYMENTMETHOD,
             TypeOfPayment.VISA, "pippo", "", null, RequestStatus.PENDING);
 
 
-    @Before()
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         requestDao.insertRequest(request);
     }
 

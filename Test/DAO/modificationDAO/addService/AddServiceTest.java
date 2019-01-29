@@ -19,15 +19,15 @@ import static org.junit.Assert.*;
 
 public class AddServiceTest {
 
-    private RequestForModificationDao requestDao = ModificationDaoFActory.getInstance().createProduct(TypeOfModification.ADD_SERVICE);
-    private  ActiveContract contract = ContractDao.getInstance().getContract(1);
-    private RequestForModification request1 = new RequestForModification(contract, TypeOfModification.ADD_SERVICE,
+    private static RequestForModificationDao requestDao = ModificationDaoFActory.getInstance().createProduct(TypeOfModification.ADD_SERVICE);
+    private static ActiveContract contract = ContractDao.getInstance().getContract(1);
+    private static RequestForModification request1 = new RequestForModification(contract, TypeOfModification.ADD_SERVICE,
             new OptionalService("wifi", 30, ""), "pippo", "", null, RequestStatus.PENDING);
-    private RequestForModification request2 = new RequestForModification(contract, TypeOfModification.ADD_SERVICE,
+    private static RequestForModification request2 = new RequestForModification(contract, TypeOfModification.ADD_SERVICE,
             new OptionalService("pulizia", 30, ""), "pippo", "", null, RequestStatus.PENDING);
 
     @BeforeClass
-    public void setUp() throws Exception {
+    public static void setUp() throws Exception {
         requestDao.insertRequest(request1);
         requestDao.insertRequest(request2);
     }
