@@ -1,5 +1,5 @@
 package entity.modification;
-import Beans.Contract;
+import Beans.ActiveContract;
 import entity.OptionalService;
 
 import java.util.List;
@@ -29,10 +29,13 @@ public class RemoveServiceModification extends Modification {
     }
 
     @Override
-    public boolean validate(Contract contract) {
-        List<OptionalService> newList = contract.getServiceList();
-        if (!newList.contains(this.objectToChange))
-            return false;
-        return true;
+    public boolean validate(ActiveContract activeContract) {
+        OptionalService service = (OptionalService)objectToChange;
+        List<OptionalService> newList = activeContract.getServiceList();
+        for (OptionalService item : newList)
+            if (item.getServicePrice() == service.getServicePrice() &&
+                    item.getServiceName().equals(service.getServiceName()) )
+                return true;
+        return false;
     }
 }

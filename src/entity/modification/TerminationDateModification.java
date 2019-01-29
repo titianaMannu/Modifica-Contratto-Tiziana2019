@@ -1,5 +1,5 @@
 package entity.modification;
-import Beans.Contract;
+import Beans.ActiveContract;
 
 import java.time.LocalDate;
 
@@ -14,9 +14,9 @@ public class TerminationDateModification extends Modification {
     }
 
     @Override
-    public boolean validate(Contract contract) {
+    public boolean validate(ActiveContract activeContract) {
         LocalDate newDate = this.getObjectToChange();
-        if (newDate.isBefore(LocalDate.now().plusDays(30)) | contract.getTerminationDate().equals(newDate))
+        if (newDate.isBefore(LocalDate.now().plusDays(30)) | activeContract.getTerminationDate().equals(newDate))
             return false;
         return true;
     }

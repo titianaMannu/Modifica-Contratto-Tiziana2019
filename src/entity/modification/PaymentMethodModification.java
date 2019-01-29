@@ -1,5 +1,5 @@
 package entity.modification;
-import Beans.Contract;
+import Beans.ActiveContract;
 import entity.TypeOfPayment;
 
 public class PaymentMethodModification extends Modification {
@@ -12,8 +12,8 @@ public class PaymentMethodModification extends Modification {
     }
 
     @Override
-    public boolean validate(Contract contract) {
-        if (contract.getPaymentMethod().equals(this.getObjectToChange()))
+    public boolean validate(ActiveContract activeContract) {
+        if (activeContract.getPaymentMethod().equals(this.getObjectToChange()))
             return false;
         return true;
     }

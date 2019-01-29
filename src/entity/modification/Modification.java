@@ -1,5 +1,5 @@
 package entity.modification;
-import Beans.Contract;
+import Beans.ActiveContract;
 
 public abstract class Modification {
     protected Object objectToChange;
@@ -9,10 +9,10 @@ public abstract class Modification {
     }
 
     /**
-     * @param contract : Contract
-     * @return true if the Modification is compatible with the contract; else return false
+     * @param activeContract : ActiveContract
+     * @return true if the Modification is compatible with the activeContract; else return false
      */
-    public abstract boolean validate(Contract contract);
+    public abstract boolean validate(ActiveContract activeContract);
 
 
     public void setObjectToChange(Object objectToChange) throws IllegalArgumentException{
