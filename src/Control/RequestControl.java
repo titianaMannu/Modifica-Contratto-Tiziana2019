@@ -10,8 +10,6 @@ import Beans.ErrorMsg;
 import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
 import entity.request.RequestStatus;
-
-import javax.xml.bind.ValidationException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +18,10 @@ import java.util.List;
  * inserisci richiesta
  * visualizza proposte
  * ottieni contratto
- * chiudi contratto (segna come letto)
- * subroutine che si occupa di eliminare le richieste chiuse
+ * chiudi richiesta (segna come letto)
  *
  */
+
 public class RequestControl {
     private String userNickname;
     private ActiveContract activeContract;
@@ -58,18 +56,21 @@ public class RequestControl {
                 msg.addMsg("Stato della richiesta non corretto: non può essere inviata\n");
                 return msg;
             }
-            RequestForModification request = new RequestForModification(requestBean.getIdRequest(),
-                    activeContract, requestBean.getType(), requestBean.getObjectToChange(), userNickname,
-                    requestBean.getReasonWhy(), requestBean.getDate(), requestBean.getStatus());
+            RequestForModification request = new RequestForModification(activeContract, requestBean.getType(),
+                    requestBean.getObjectToChange(), userNickname, requestBean.getReasonWhy(),
+                    requestBean.getDate(), requestBean.getStatus());
 
             RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(requestBean.getType());
             try {//prima di inserire una richiesta nel sistema se ne fa la validazione
-                dao.validateRequest(request);
-            } catch (SQLException | ValidationException e) {
+                if ( !( request.getModification().validate( request.getActiveContract() ) &&  dao.validateRequest(request) )) {
+                    msg.addMsg("Specificare una modifica significativa\n");
+                    return msg;
+                }
+            } catch (SQLException e) {
                 msg.addMsg(e.getMessage());
                 return msg;
             }
-            dao.insertModification(request);
+            dao.insertRequest(request);
         } catch (SQLException | NullPointerException e) {
             msg.addMsg("Operazione non riuscita: " + e.getMessage());
 
@@ -94,7 +95,12 @@ public class RequestControl {
         return list;
     }
 
-    public ErrorMsg closeRequest(RequestBean requestBean){
+    /**
+     * eliminazione
+     * @param requestBean
+     * @return
+     */
+    public ErrorMsg deleteRequest(RequestBean requestBean){
         ErrorMsg msg = new ErrorMsg();
         try{
             if (requestBean.getStatus() != RequestStatus.CLOSED){
@@ -119,6 +125,11 @@ public class RequestControl {
 
     }
 
+    /**
+     * segna come letto
+     * @param requestBean
+     * @return
+     */
     public ErrorMsg setAsClosed(RequestBean requestBean){
         ErrorMsg msg = new ErrorMsg();
         if (requestBean.getStatus() == RequestStatus.PENDING ){

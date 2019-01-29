@@ -19,7 +19,7 @@ import java.util.List;
  * ottieni proposte
  * accetta proposta
  * respingi proposta
- * subroutine che si occupa di settare le richieste expired
+ * subroutine che si occupa di settare le richieste expired (dovrebbe essere un caso d'uso a parte)
  */
 
 public class ModificationControl {
