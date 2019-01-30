@@ -1,9 +1,7 @@
 package Beans;
 
-import java.util.Objects;
-
 public class OptionalService {
-    private int serviceId;
+    private int serviceId = -1;
     private  String serviceName;
     private int servicePrice;
     private String description;
@@ -15,10 +13,19 @@ public class OptionalService {
         this.description = description;
     }
 
-    public OptionalService(int serviceId, String serviceName, int servicePrice) {
-        this.serviceId = serviceId;
+    public OptionalService(String serviceName, int servicePrice, String description) {
+        this.description = description;
         this.serviceName = serviceName;
         this.servicePrice = servicePrice;
+    }
+
+    public void setServiceId(int serviceId) {
+        this.serviceId = serviceId;
+    }
+
+
+    public String getDescription() {
+        return description;
     }
 
     public String getServiceName() {
@@ -47,7 +54,8 @@ public class OptionalService {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         OptionalService service = (OptionalService) object;
-        return Objects.equals(serviceName, service.serviceName);
+        return serviceId == service.serviceId;
     }
+
 
 }

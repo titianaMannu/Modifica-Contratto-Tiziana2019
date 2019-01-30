@@ -19,6 +19,11 @@ public class ErrorMsg {
         return !msg.isEmpty() ;
     }
 
+    public void addAllMsg(ErrorMsg msg){
+        this.msg.addAll(msg.getMsgList());
+
+    }
+
     public void addMsg(String m) {
         msg.add(m) ;
     }

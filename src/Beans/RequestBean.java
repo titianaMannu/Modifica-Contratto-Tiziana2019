@@ -5,6 +5,7 @@ import entity.request.RequestStatus;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class RequestBean implements Serializable {
     //TODO controllo sui dai!
@@ -25,6 +26,35 @@ public class RequestBean implements Serializable {
         this.date = date;
         this.status = status;
         IdRequest = idRequest;
+    }
+
+    public RequestBean(String sender, TypeOfModification type, Object objectToChange, String reasonWhy, LocalDate date) {
+        this.sender = sender;
+        this.type = type;
+        this.objectToChange = objectToChange;
+        this.reasonWhy = reasonWhy;
+        this.date = date;
+        //parametri default
+
+        status = RequestStatus.PENDING;
+        IdRequest = -1;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        RequestBean that = (RequestBean) object;
+        return IdRequest == that.IdRequest;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(IdRequest);
+    }
+
+    public String getSender() {
+        return sender;
     }
 
     public int getIdRequest() {
