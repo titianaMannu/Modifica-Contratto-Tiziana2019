@@ -1,16 +1,16 @@
 package entity;
 
-import org.jetbrains.annotations.NotNull;
-
 public enum TypeOfPayment {
-    CREDIT_CARD(0),
-    VISA(1),
-    PAYPAL(2),
-    WIRE_TRANSFER(3);
+    CREDIT_CARD(0, "carta di credito"),
+    VISA(1, "Visa"),
+    PAYPAL(2, "Paypal"),
+    WIRE_TRANSFER(3, "bonifico bancario");
 
     private int value;
-    TypeOfPayment(int value){
+    private String description;
+    TypeOfPayment(int value, String description){
         this.value = value;
+        this.description = description;
     }
 
     public static TypeOfPayment valueOf(int inVal){
@@ -18,6 +18,10 @@ public enum TypeOfPayment {
             if (type.getValue() == inVal )
                 return type;
         return null;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public int getValue(){
