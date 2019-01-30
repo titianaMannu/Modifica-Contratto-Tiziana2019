@@ -9,8 +9,8 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class ModificationControlTest {
-    private static ModificationControl control = new ModificationControl();
+public class SubmitModelTest {
+    private static SubmitModel control = new SubmitModel();
     private static List<RequestBean> list ;
     @BeforeClass
     public static void setUp() throws Exception {

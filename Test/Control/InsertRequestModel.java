@@ -2,7 +2,7 @@ package Control;
 
 import Beans.ErrorMsg;
 import Beans.RequestBean;
-import entity.OptionalService;
+import Beans.OptionalService;
 import entity.modification.TypeOfModification;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,22 +16,22 @@ import static org.junit.Assert.*;
  * l'intento non è quello di coprire tutti i casi possibili ma solo quelli con valenza applicativa
  */
 
-public class InsertRequestControl {
+public class InsertRequestModel {
 
-    private static RequestControl requestControl = new RequestControl();
+    private static RequestModel requestModel = new RequestModel();
     private RequestBean request;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        requestControl.setActiveContract(1);
-        requestControl.setUserNickname("pippo");
+        requestModel.setActiveContract(1);
+        requestModel.setUserNickname("pippo");
     }
 
     @Test
     public void insertRequest() {
         request= new RequestBean("pippo" , TypeOfModification.ADD_SERVICE,
                 new OptionalService("pulizia", 30, ""), "", LocalDate.now());
-        ErrorMsg err = requestControl.insertRequest(request);
+        ErrorMsg err = requestModel.insertRequest(request);
         assertFalse(err.isErr());
     }
 
