@@ -22,7 +22,7 @@ import java.util.List;
  * subroutine che si occupa di settare le richieste expired (dovrebbe essere un caso d'uso a parte)
  */
 
-public class ModificationControl {
+public class SubmitModel {
     private String userNickname;
     private ActiveContract activeContract;
 
@@ -43,9 +43,14 @@ public class ModificationControl {
     public ErrorMsg setActiveContract(int contractId) {
         ErrorMsg msg = new ErrorMsg();
         ContractDao dao = ContractDao.getInstance();
-        activeContract = dao.getContract(contractId);
+        ActiveContract activeContract = dao.getContract(contractId);
         if (activeContract == null)
             msg.addMsg("Il contratto selezionato non è stato trovato\nPotrebbe non essere più attivo\n");
+        else if (!(activeContract.getRenterNickname().equals(userNickname) ||
+                activeContract.getTenantNickname().equals(userNickname)) )
+            msg.addMsg("UserName e/o codice contratto non compatibili\n");
+        else
+            this.activeContract = activeContract;
         return msg;
     }
 
