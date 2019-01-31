@@ -19,6 +19,21 @@ public class OptionalService {
         this.servicePrice = servicePrice;
     }
 
+    public OptionalService() {
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public void setServicePrice(int servicePrice) {
+        this.servicePrice = servicePrice;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public void setServiceId(int serviceId) {
         this.serviceId = serviceId;
     }
@@ -42,11 +57,7 @@ public class OptionalService {
 
     @Override
     public String toString() {
-        return "OptionalService{" +
-                "serviceName='" + serviceName + '\'' +
-                ", serviceDescription='" +
-                ", servicePrice=" + servicePrice +
-                '}';
+        return "[ " + serviceName + ", " +  servicePrice + " ]";
     }
 
     @Override

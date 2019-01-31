@@ -3,6 +3,7 @@ package Beans;
 import entity.modification.TypeOfModification;
 import entity.request.RequestStatus;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -36,6 +37,19 @@ public class RequestBean implements Serializable {
         this.date = date;
         //parametri default
 
+        status = RequestStatus.PENDING;
+        IdRequest = -1;
+    }
+
+    /**
+     * bean class should have a default constructor!
+     */
+    public RequestBean() {
+        sender = "";
+        type = null;
+        objectToChange = null;
+        reasonWhy = "";
+        date = LocalDate.now();
         status = RequestStatus.PENDING;
         IdRequest = -1;
     }
@@ -98,11 +112,12 @@ public class RequestBean implements Serializable {
     }
 
 
-    public String getReasonWhy() {
+   public String getReasonWhy() {
         return reasonWhy;
     }
 
     public void setReasonWhy(String reasonWhy) {
         this.reasonWhy = reasonWhy;
     }
+
 }

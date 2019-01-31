@@ -1,10 +1,13 @@
 package view;
 import java.net.URL;
+import java.util.EventListener;
 import java.util.ResourceBundle;
 import Beans.ErrorMsg;
 import Control.RequestModel;
 import Control.SubmitModel;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,6 +19,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import view.evaluateSubmitsView.EvaluateController;
 import view.requestView.RequestController;
+
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicButtonListener;
 
 public class InitController {
 
@@ -97,8 +103,7 @@ public class InitController {
             controller.setModel(model);
             //chiamo metodo di inizializzazione
             controller.dysplayContractField();
-
-
+            controller.doViewRequests();
 
             Stage stage = new Stage();
             stage.initStyle(StageStyle.DECORATED);

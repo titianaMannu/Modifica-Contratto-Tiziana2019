@@ -1,6 +1,6 @@
 package entity.modification;
 import Beans.ActiveContract;
-import entity.OptionalService;
+import Beans.OptionalService;
 
 import java.util.List;
 
@@ -8,15 +8,12 @@ import java.util.List;
 public class RemoveServiceModification extends Modification {
 
     public RemoveServiceModification(Object objectToChange) throws IllegalArgumentException {
-        super(objectToChange);
-        if (!(objectToChange instanceof OptionalService)) {
-            throw new IllegalArgumentException("*******Argument must be a  Service instance*******\n");
-        }
-
+        setObjectToChange(objectToChange);
     }
 
     @Override
     public void setObjectToChange(Object objectToChange) throws IllegalArgumentException {
+        super.setObjectToChange(objectToChange);
         if (!(objectToChange instanceof OptionalService)) {
             throw new IllegalArgumentException("*******Argument must be a  Service instance*******\n");
         }

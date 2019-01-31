@@ -20,6 +20,14 @@ public enum TypeOfPayment {
         return null;
     }
 
+
+    public static TypeOfPayment getType(String inVal){
+        for (TypeOfPayment type : values())
+            if (type.getDescription().equals(inVal) )
+                return type;
+        return null;
+    }
+
     public String getDescription() {
         return description;
     }

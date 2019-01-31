@@ -6,6 +6,7 @@ import entity.modification.ModificationFactory;
 import entity.modification.TypeOfModification;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 
 public class RequestForModification {
@@ -41,11 +42,23 @@ public class RequestForModification {
         setStatus(status);
     }
 
-    public void setRequestId(int requestId) {
-        //si assume che l'id della richesta sia un # non negativo
-        if (requestId >= 0)
-            this.requestId = requestId;
-        else this.requestId = -1;
+    public RequestForModification(ActiveContract c, TypeOfModification type, Object obj, String sender, String reasonWhy,
+                                  LocalDate date, RequestStatus status) throws  IllegalArgumentException{
+
+        setModification(obj, type);
+        if (c == null)
+            throw new IllegalArgumentException("Contratto inserito non corretto\n");
+        this.activeContract = c;
+        setType(type);
+        setReasonWhy(reasonWhy);
+        setDateOfSubmission(date);
+        setSenderReceiver(sender, c);
+        setStatus(status);
+    }
+
+    public void setRequestId(int requestId)throws IllegalArgumentException {
+        if (requestId < 1) throw new IllegalArgumentException("Specificare una richiesta esistente\n");
+        this.requestId = requestId;
     }
 
     public void setModification(Object obj, TypeOfModification type) throws IllegalArgumentException{
@@ -142,13 +155,13 @@ public class RequestForModification {
         return requestId;
     }
 
+
     @Override
-    public String toString() {
-        return "RequestForModification{" +
-                ", senderNickname='" + senderNickname + '\'' +
-                ", receiverNickname='" + receiverNickname + '\'' +
-                ", dateOfSubmission=" + dateOfSubmission +
-                '}';
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        RequestForModification request = (RequestForModification) object;
+        return requestId == request.requestId;
     }
 
 

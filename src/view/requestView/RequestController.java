@@ -1,30 +1,37 @@
 package view.requestView;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import Beans.ActiveContract;
+import Beans.ErrorMsg;
+import Beans.RequestBean;
 import Control.RequestModel;
-import entity.OptionalService;
+import Beans.OptionalService;
 import entity.TypeOfPayment;
+import entity.modification.TypeOfModification;
+import entity.request.RequestStatus;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
+
 public class RequestController {
 
-    RequestModel model;
+    private RequestModel model;
+    private RequestBean requestBean;
+
 
     public void setModel(RequestModel model) {
         this.model = model;
     }
+
 
     @FXML
     private Text idContractField;
@@ -75,48 +82,157 @@ public class RequestController {
     private TextArea messageArea;
 
     @FXML
-    private Button displayBtn;
-
-    @FXML
     private GridPane gp;
 
     @FXML
-    void doSend(ActionEvent event) {
+    private TextArea reasonWhyArea;
 
+    @FXML
+    private TextField serviceNameField;
+
+    @FXML
+    private TextField servicePriceField;
+
+    @FXML
+    private TextField serviceDescriptionField;
+
+    @FXML
+    private GridPane requestGp;
+
+    @FXML
+    private ScrollPane requestPane;
+
+
+
+
+    @FXML
+    void doSend(ActionEvent event) {
+        ErrorMsg msg = model.insertRequest(requestBean);
+        messageArea.clear();
+        if (msg.isErr())
+            for (String item : msg.getMsgList()){
+                messageArea.appendText(item);
+            }
+        else {
+            messageArea.appendText("inserimento riuscito!\n");
+        }
+        flushInfo();
+        reasonWhyArea.setVisible(false);
+        confirmationBtn.setVisible(false);
     }
 
     @FXML
-    void doAddService(MouseEvent event) {
-
+    void doAddService(ActionEvent event) {
+        OptionalService service= new OptionalService();
+        service.setServiceName(serviceNameField.getText());
+        service.setServicePrice(Integer.parseInt(servicePriceField.getText()));
+        service.setDescription(serviceDescriptionField.getText());
+        requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.ADD_SERVICE,
+                service, reasonWhyArea.getText(), LocalDate.now());
+        messageArea.appendText("Sicuro di voler  aggiungere questo servizio?\nUna volta confermato non potrai più cambiare la richesta\n" +
+                "Puoi specificare la ragione della richesta.\n");
+        confirmationBtn.setVisible(true);
+        reasonWhyArea.setVisible(true);
     }
 
     @FXML
     void doChangeDate(ActionEvent event) {
-
+        LocalDate date = TerminationDateField.getValue();
+        requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_TERMINATIONDATE,
+                date, reasonWhyArea.getText(), LocalDate.now());
+        messageArea.appendText("Sicuro di voler cambiare la data di scadenza?\nUna volta confermato non potrai più cambiarla\n" +
+                "Puoi specificare la ragione della richesta\n");
+        confirmationBtn.setVisible(true);
+        reasonWhyArea.setVisible(true);
     }
 
     @FXML
     void doChangePayment(ActionEvent event) {
-
+        TypeOfPayment type = TypeOfPayment.getType(paymentComboBox.getValue());
+        requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_PAYMENTMETHOD,
+                type, reasonWhyArea.getText(), LocalDate.now());
+        messageArea.clear();
+        messageArea.appendText("Sicuro di voler cambiare il metodo di pagamento?\nUna volta confermato non potrai più cambiarla\n" +
+                "Puoi specificare la ragione della richesta\n");
+        confirmationBtn.setVisible(true);
+        reasonWhyArea.setVisible(true);
     }
 
     @FXML
-    void doViewRequests(ActionEvent event) {
-
+    public void doViewRequests() {
+        int count = 0;
+        List<RequestBean> list = model.getAllRequests();
+        for (RequestBean item : list){
+            ++count;
+            Text text0 = new Text(String.valueOf(item.getIdRequest())); //IdRequest
+            GridPane.setConstraints(text0, 0, count);
+            Text text1 = new Text(item.getObjectToChange().toString()); // objectToChange
+            GridPane.setConstraints(text1, 1, count);
+            Text text2 = new Text(item.getReasonWhy());
+            GridPane.setConstraints(text2, 2, count);
+            Text text3 = new Text(item.getDate().toString());
+            GridPane.setConstraints(text3, 3, count);
+            Text text4 =new Text(item.getStatus().getDescription()) ;
+            GridPane.setConstraints(text4, 4, count);
+            if (item.getStatus() != RequestStatus.PENDING && item.getStatus() != RequestStatus.CLOSED) {
+                Button btn = new Button("segna come letto");
+                int finalCount = count;
+                btn.setOnAction(e -> closeRequest(finalCount));
+                GridPane.setConstraints(btn, 5, count);
+                requestGp.getChildren().add(btn);
+            }
+            requestGp.getChildren().addAll(text0, text1, text2, text3, text4);
+        }
     }
 
+    @FXML
+    void closeRequest(int row){
+        ErrorMsg msg = new ErrorMsg();
+        RequestBean request = new RequestBean();
+        Text node = (Text)getNodeFromGridPane(requestGp, 0, row); //idRequest
+        request.setIdRequest(Integer.parseInt(node.getText()));
+        for (RequestBean item : model.getAllRequests()){
+            if (item.equals(request))
+                msg.addAllMsg(model.setAsClosed(item));
+        }
+        messageArea.clear();
+        if (msg.isErr())
+            for (String item : msg.getMsgList()){
+                messageArea.appendText(item);
+            }
+        else
+            messageArea.appendText("operazione riuscita\n");
+      flushInfo();
+    }
 
     @FXML
-    void doDeleteService() {
-        messageArea.appendText("ciao!\n");
+    void doDeleteService( int row) {
+       OptionalService service = new OptionalService();
+        //takes elements from the gridPane by using the input row field
+        Label node = (Label)getNodeFromGridPane(gp, 0, row);
+        service.setServiceId(Integer.parseInt(node.getText()));
+        node = (Label)getNodeFromGridPane(gp, 1, row);
+        service.setServiceName(node.getText());
+        node = (Label)getNodeFromGridPane(gp, 2, row);
+        service.setServicePrice(Integer.parseInt(node.getText()));
+        node = (Label)getNodeFromGridPane(gp, 3, row);
+        service.setDescription(node.getText());
 
+
+        requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.REMOVE_SERVICE,
+                service, reasonWhyArea.getText(), LocalDate.now());
+        messageArea.appendText("Sicuro di voler  eliminare questo servizio?\nUna volta confermato non potrai più cambiare la richesta\n" +
+                "Puoi specificare la ragione della richesta.\n");
+        confirmationBtn.setVisible(true);
+        reasonWhyArea.setVisible(true);
     }
 
     /**
      * mostra i campi del contratto inizializzando la pagina
      */
+    @FXML
     public void dysplayContractField(){
-        int count = 1;
+        int count = 0;
         ActiveContract contract = model.getContract();
         idContractField.setText(String.valueOf(contract.getContractId()));
         tenantField.setText(contract.getTenantNickname());
@@ -127,17 +243,48 @@ public class RequestController {
         paymentComboBox.setValue(contract.getPaymentMethod().getDescription());
         initDateField.setText(contract.getInitDate().toString());
         TerminationDateField.setValue(contract.getTerminationDate());
+        //creation of a grisPane  dynamically
         for (OptionalService service : contract.getServiceList()){
-            gp.addRow(++count);
-            gp.add(new Text(service.getServiceName()), 0, count);   //name
-            gp.add(new Text(String.valueOf(service.getServicePrice())), 1, count); //price
-            gp.add(new Text(service.getDescription()), 2, count); //description
+            ++count;
+            Label label0 = new Label(String.valueOf(service.getServiceId()));
+            GridPane.setConstraints(label0, 0, count);
+            Label label1 = new Label(service.getServiceName());
+            GridPane.setConstraints(label1, 1, count);
+            Label label2 = new Label(String.valueOf(service.getServicePrice()));
+            GridPane.setConstraints(label2, 2, count);
+            Label label3 = new Label(service.getDescription());
+            GridPane.setConstraints(label3, 3, count);
             Button btn = new Button("elimina");
-            btn.setOnAction( e -> doDeleteService());
-            gp.add(btn, 3, count);
+            int finalCount = count;
+            btn.setOnAction(e -> doDeleteService(finalCount));
+            GridPane.setConstraints(btn, 4, count);
+            gp.getChildren().addAll(label0, label1, label2, label3, btn);
         }
 
 
+    }
+
+    private void flushInfo(){
+        clearGridPane(requestGp);
+        clearGridPane(gp);
+        dysplayContractField();
+        doViewRequests();
+    }
+
+    private Node getNodeFromGridPane(GridPane gridPane, int col,  int row) {
+        ObservableList<Node> childrens = gridPane.getChildren();
+        for ( Node  node : childrens) {
+            if (GridPane.getColumnIndex(node) == null  || GridPane.getRowIndex(node) == null) continue;
+            if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node)== row) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private void clearGridPane(GridPane gp){
+        ObservableList<Node> childrens = gp.getChildren();
+        childrens.clear();
     }
 
     @FXML
@@ -155,13 +302,13 @@ public class RequestController {
         assert addServiceBtn != null : "fx:id=\"addServiceBtn\" was not injected: check your FXML file 'Requests.fxml'.";
         assert confirmationBtn != null : "fx:id=\"confirmationBtn\" was not injected: check your FXML file 'Requests.fxml'.";
         assert messageArea != null : "fx:id=\"messageArea\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert displayBtn != null : "fx:id=\"dysplayBtn\" was not injected: check your FXML file 'Requests.fxml'.";
+
         //riempimento della combobox
         for (TypeOfPayment item : TypeOfPayment.values()){
             paymentComboBox.getItems().add(item.getDescription());
         }
+        reasonWhyArea.setVisible(false);
         confirmationBtn.setVisible(false);
-        messageArea.setVisible(false);
 
     }
 }

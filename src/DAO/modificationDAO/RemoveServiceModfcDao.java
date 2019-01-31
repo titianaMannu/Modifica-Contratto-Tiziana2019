@@ -3,7 +3,7 @@ package DAO.modificationDAO;
 import Beans.ActiveContract;
 import Beans.RequestBean;
 import DAO.C3poDataSource;
-import entity.OptionalService;
+import Beans.OptionalService;
 import entity.modification.Modification;
 import entity.modification.ModificationFactory;
 import entity.modification.RemoveServiceModification;

@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ActiveContract implements Serializable {
     private int contractId; // importante!
-    private LocalDate initDate; // importante!
+   // private LocalDate initDate; // importante!
     private LocalDate terminationDate; // importante!
     private TypeOfPayment paymentMethod; // importante!
     private String tenantNickname; // importante!

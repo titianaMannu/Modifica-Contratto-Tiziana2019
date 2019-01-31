@@ -4,10 +4,6 @@ import Beans.ActiveContract;
 public abstract class Modification {
     protected Object objectToChange;
 
-    public Modification(Object objectToChange) throws  IllegalArgumentException{
-        this.setObjectToChange(objectToChange);
-    }
-
     /**
      * @param activeContract : ActiveContract
      * @return true if the Modification is compatible with the activeContract; else return false

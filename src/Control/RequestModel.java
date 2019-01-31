@@ -30,6 +30,10 @@ public class RequestModel {
         return activeContract;
     }
 
+    public String getUserNickname() {
+        return userNickname;
+    }
+
     public ErrorMsg setUserNickname(String userNickname) {
         ErrorMsg msg = new ErrorMsg();
         if (userNickname!= null && !userNickname.isEmpty())
@@ -55,22 +59,32 @@ public class RequestModel {
 
     public ErrorMsg insertRequest(RequestBean requestBean) {
         ErrorMsg msg = new ErrorMsg();
+        RequestForModification request;
         try {
             if (requestBean.getStatus() != RequestStatus.PENDING) {
                 //le richieste possono essere fatte solo se sono nello stato PENDING
                 msg.addMsg("Stato della richiesta non corretto: non può essere inviata\n");
                 return msg;
             }
-            RequestForModification request = new RequestForModification(activeContract, requestBean.getType(),
-                    requestBean.getObjectToChange(), userNickname, requestBean.getReasonWhy(),
-                    requestBean.getDate(), requestBean.getStatus());
-
+            try {
+                 request = new RequestForModification(activeContract, requestBean.getType(),
+                        requestBean.getObjectToChange(), userNickname, requestBean.getReasonWhy(),
+                        requestBean.getDate(), requestBean.getStatus());
+            }catch (IllegalArgumentException e){
+                msg.addMsg(e.getMessage());
+                return msg;
+            }
             RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(requestBean.getType());
-            try {//prima di inserire una richiesta nel sistema se ne fa la validazione
-                if ( !( request.getModification().validate( request.getActiveContract() ) &&  dao.validateRequest(request) )) {
+            try {//prima di inserire una richiesta nel sistema ne fa la validazione
+                if ( !request.getModification().validate( request.getActiveContract() )){
                     msg.addMsg("Specificare una modifica significativa\n");
                     return msg;
                 }
+                else if (! dao.validateRequest(request) ){
+                    msg.addMsg("Esiste giá una richiesta per questa modifca\nControlla nel pannello di riepilogo\n");
+                    return msg;
+                }
+
             } catch (SQLException e) {
                 msg.addMsg(e.getMessage());
                 return msg;

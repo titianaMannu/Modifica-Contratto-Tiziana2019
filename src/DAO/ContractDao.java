@@ -1,7 +1,7 @@
 package DAO;
 
 import Beans.ActiveContract;
-import entity.OptionalService;
+import Beans.OptionalService;
 import entity.TypeOfPayment;
 
 import java.sql.Connection;
@@ -22,6 +22,7 @@ public class ContractDao {
     private ContractDao() {
     }
 
+    //todo cambia init date in stipulationDate
     public ActiveContract getContract(int contractId){
         ActiveContract activeContract = null;
         String sql = "select  initDate, terminationDate, paymentMethod, tenantNickname, " +

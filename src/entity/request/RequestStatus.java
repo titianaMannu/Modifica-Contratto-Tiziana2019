@@ -23,7 +23,7 @@ public enum RequestStatus {
 
     public static RequestStatus valueOf(int inVal){
         for (RequestStatus e : values())
-            if (e.getCurrentStatus() == inVal)
+            if (e.getValue() == inVal)
                 return e;
         return null;
     }
@@ -32,7 +32,7 @@ public enum RequestStatus {
         return description;
     }
 
-    public int getCurrentStatus(){
+    public int getValue(){
        return this.current;
     }
 }
