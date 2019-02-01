@@ -26,6 +26,11 @@ public class RequestModel {
     private String userNickname = "";
     private ActiveContract activeContract;
 
+    public RequestModel(String userNickname, int contractId) {
+        setUserNickname(userNickname);
+        setActiveContract(contractId);
+    }
+
     public ActiveContract getContract(){
         return activeContract;
     }

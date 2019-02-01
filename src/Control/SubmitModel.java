@@ -26,6 +26,10 @@ public class SubmitModel {
     private String userNickname;
     private ActiveContract activeContract;
 
+    public SubmitModel(String userNickname, int contractId) {
+        setUserNickname(userNickname);
+        setActiveContract(contractId);
+    }
 
     public ActiveContract getContract(int contractId){
         return activeContract;
