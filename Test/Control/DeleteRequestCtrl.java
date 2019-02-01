@@ -12,28 +12,27 @@ import static org.junit.Assert.assertTrue;
 
 public class DeleteRequestCtrl {
 
-    private static RequestControl requestControl = new RequestControl();
+    private static RequestModel requestModel ;
     private static List<RequestBean> list ;
 
     @BeforeClass
     public  static void setUp(){
-        requestControl.setActiveContract(1);
-        requestControl.setUserNickname("pippo");
-        list = requestControl.getAllRequests();
+        requestModel = new RequestModel("pippo", 1);
+        list = requestModel.getAllRequests();
     }
 
     @Test
     public void deleteRequest(){
         ErrorMsg err;
         for (RequestBean item : list ){
-            err = requestControl.setAsClosed(item);
+            err = requestModel.setAsClosed(item);
             if (item.getStatus() == RequestStatus.PENDING  || item.getStatus() == RequestStatus.CLOSED)
                 assertTrue(err.isErr());
             else {
-                list = requestControl.getAllRequests();
+                list = requestModel.getAllRequests();
 
                 assertFalse(err.isErr());
-                err = requestControl.deleteRequest(list.get(list.indexOf(item)));
+                err = requestModel.deleteRequest(list.get(list.indexOf(item)));
                 if (err.isErr()) System.out.println(err.getMsgList().get(0));
                 assertFalse(err.isErr());
             }

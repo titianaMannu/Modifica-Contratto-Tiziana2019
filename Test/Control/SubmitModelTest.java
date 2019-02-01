@@ -10,12 +10,11 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class SubmitModelTest {
-    private static SubmitModel control = new SubmitModel();
+    private static SubmitModel control ;
     private static List<RequestBean> list ;
     @BeforeClass
     public static void setUp() throws Exception {
-        control.setActiveContract(1);
-        control.setUserNickname("pluto");
+        control = new SubmitModel("pippo", 1);
         list = control.getSubmits();
     }
 

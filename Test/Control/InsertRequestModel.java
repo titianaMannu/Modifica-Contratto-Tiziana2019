@@ -18,19 +18,18 @@ import static org.junit.Assert.*;
 
 public class InsertRequestModel {
 
-    private static RequestModel requestModel = new RequestModel();
+    private static RequestModel requestModel;
     private RequestBean request;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        requestModel.setActiveContract(1);
-        requestModel.setUserNickname("pippo");
+      requestModel = new RequestModel("pippo", 1);
     }
 
     @Test
     public void insertRequest() {
         request= new RequestBean("pippo" , TypeOfModification.ADD_SERVICE,
-                new OptionalService("pulizia", 30, ""), "", LocalDate.now());
+                new OptionalService("pulizia", 30, ""), LocalDate.now());
         ErrorMsg err = requestModel.insertRequest(request);
         assertFalse(err.isErr());
     }

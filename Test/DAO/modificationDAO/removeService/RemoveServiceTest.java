@@ -5,11 +5,10 @@ import Beans.RequestBean;
 import DAO.ContractDao;
 import DAO.modificationDAO.ModificationDaoFActory;
 import DAO.modificationDAO.RequestForModificationDao;
-import entity.OptionalService;
+import Beans.OptionalService;
 import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
 import entity.request.RequestStatus;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
