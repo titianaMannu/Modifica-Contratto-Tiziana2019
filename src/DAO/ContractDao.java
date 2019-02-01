@@ -3,7 +3,7 @@ package DAO;
 import Beans.ActiveContract;
 import Beans.OptionalService;
 import entity.TypeOfPayment;
-
+import entity.UserType;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,10 +22,9 @@ public class ContractDao {
     private ContractDao() {
     }
 
-    //todo cambia init date in stipulationDate
     public ActiveContract getContract(int contractId){
         ActiveContract activeContract = null;
-        String sql = "select  initDate, terminationDate, paymentMethod, tenantNickname, " +
+        String sql = "select  stipulationDate, terminationDate, paymentMethod, tenantNickname, " +
                 "renterNickname, grossPrice, netPrice\nfrom ActiveContract\n" +
                 "where idContract = ?";
         try(Connection conn = C3poDataSource.getConnection()){
@@ -35,7 +34,7 @@ public class ContractDao {
                     st.setInt(1, contractId);
                     ResultSet res = st.executeQuery();
                     if (res.next()){
-                        activeContract = new ActiveContract(contractId,res.getDate("initDate").toLocalDate(),
+                        activeContract = new ActiveContract(contractId,res.getDate("stipulationDate").toLocalDate(),
                                 res.getDate("terminationDate").toLocalDate(), TypeOfPayment.valueOf(res.getInt("paymentMethod")),
                                 res.getString("tenantNickname"),res.getString("renterNickname"), res.getInt("grossPrice"),
                                 res.getInt("netPrice"), getServices(contractId));
@@ -53,6 +52,43 @@ public class ContractDao {
         }
 
         return activeContract;
+    }
+
+    /**
+     *ritorna una lista dei contratti attivi in base al tipo di user in input
+     * @param userNickName : nickname dell'utente
+     * @param type : renter o tenant, altrimenti viene ritornata una lista vuota
+     */
+    public List<ActiveContract> getAllActiveContracts(String userNickName, UserType type) {
+        List<ActiveContract> list = new ArrayList<>();
+        String sql;
+
+        switch (type){
+            case RENTER:
+                sql = "select idContract\n" +
+                        "from ActiveContract\n" +
+                        "where renterNickname = ? ";
+                break;
+            case TENANT:
+                sql = "select idContract\n" +
+                        "from ActiveContract\n" +
+                        "where tenantNickname = ? ";
+                break;
+                default: return list;
+        }
+        try (Connection connection = C3poDataSource.getConnection(); PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, userNickName);
+            ResultSet res = st.executeQuery();
+            while (res.next()){
+                ActiveContract contract = getContract(res.getInt("idContract"));
+                if (contract != null){
+                    list.add(contract);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public List<OptionalService> getServices(int contractId){

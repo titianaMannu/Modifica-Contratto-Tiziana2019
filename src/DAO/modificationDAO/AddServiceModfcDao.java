@@ -258,7 +258,7 @@ public class AddServiceModfcDao extends RequestForModificationDao {
             st.setInt(1, activeContract.getContractId());
             st.setString(2, receiver);
             st.setInt(3, TypeOfModification.ADD_SERVICE.getValue());
-            st.setInt(4, RequestStatus.PENDING.getValue());
+            st.setInt(4, RequestStatus.PENDING.getValue()); //selezione delle sole richieste pending
             ResultSet res = st.executeQuery();
             while(res.next()){
                 //tipo di modifica è di tipo addService in questo caso
