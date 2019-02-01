@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.InitController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.init_page.InitController">
    <center>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -25,18 +25,18 @@
             </TextField>
             <HBox>
                <children>
-                  <Button fx:id="checkForSubmitsBtn" mnemonicParsing="false" onAction="#checkForSubmits" text="valuta proposte">
-                     <font>
-                        <Font size="15.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="doRequestsBtn" mnemonicParsing="false" onAction="#doRequests" text="Fai Richieste">
+                  <Button fx:id="checkForSubmitsBtn" mnemonicParsing="false" onAction="#checkForSubmits" prefHeight="29.0" prefWidth="178.0" text="Gestione Proposte">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Button>
                </children>
             </HBox>
+            <Button fx:id="doRequestsBtn" mnemonicParsing="false" onAction="#doRequests" prefHeight="29.0" prefWidth="440.0" text="Gestione Modifiche">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
             <TextArea fx:id="errorMsgArea" prefHeight="200.0" prefWidth="441.0" />
          </children>
       </VBox>

@@ -216,11 +216,11 @@
                               <Font size="15.0" />
                            </font>
                         </Button>
-                        <TextArea fx:id="reasonWhyArea" prefHeight="53.0" prefWidth="1094.0" promptText="inserisci la motivazione della richiesta">
+                        <TextField fx:id="reasonWhyArea" prefHeight="51.0" prefWidth="1091.0" promptText="inserisci una motivazione">
                            <font>
                               <Font size="17.0" />
                            </font>
-                        </TextArea>
+                        </TextField>
                      </children>
                   </HBox>
                   <TextArea fx:id="messageArea" onDragDetected="#doAddService" prefHeight="94.0" prefWidth="1221.0" promptText="messaggi ">
