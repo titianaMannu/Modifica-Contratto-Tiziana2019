@@ -118,6 +118,7 @@ public class RequestController {
 
     @FXML
     void doAddService(ActionEvent event) {
+        messageArea.clear();
         OptionalService service= new OptionalService();
         service.setServiceName(serviceNameField.getText());
         service.setServicePrice(Integer.parseInt(servicePriceField.getText()));
@@ -136,6 +137,7 @@ public class RequestController {
 
     @FXML
     void doChangeDate(ActionEvent event) {
+        messageArea.clear();
         LocalDate date = TerminationDateField.getValue();
         requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_TERMINATIONDATE,
                 date, LocalDate.now());
@@ -146,6 +148,7 @@ public class RequestController {
 
     @FXML
     void doChangePayment(ActionEvent event) {
+        messageArea.clear();
         TypeOfPayment type = TypeOfPayment.getType(paymentComboBox.getValue());
         requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_PAYMENTMETHOD,
                 type, LocalDate.now());
@@ -164,7 +167,7 @@ public class RequestController {
         List<RequestBean> list = model.getAllRequests();
         for (RequestBean item : list){
             ++count;
-            Text text0 = new Text(String.valueOf(item.getIdRequest())); //IdRequest
+            Text text0 = new Text(item.getType().getDescription()); //description
             GridPane.setConstraints(text0, 0, count);
             Text text1 = new Text(item.getObjectToChange().toString()); // objectToChange
             GridPane.setConstraints(text1, 1, count);
@@ -176,8 +179,7 @@ public class RequestController {
             GridPane.setConstraints(text4, 4, count);
             if (item.getStatus() != RequestStatus.PENDING && item.getStatus() != RequestStatus.CLOSED) {
                 Button btn = new Button("segna come letto");
-                int finalCount = count;
-                btn.setOnAction(e -> closeRequest(finalCount));
+                btn.setOnAction(e -> closeRequest(item.getRequestId()));
                 GridPane.setConstraints(btn, 5, count);
                 requestGp.getChildren().add(btn);
             }
@@ -186,16 +188,15 @@ public class RequestController {
     }
 
     @FXML
-    void closeRequest(int row){
+    void closeRequest(int idRequest){
+        messageArea.clear();
         ErrorMsg msg = new ErrorMsg();
         RequestBean request = new RequestBean();
-        Text node = (Text)getNodeFromGridPane(requestGp, 0, row); //idRequest
-        request.setIdRequest(Integer.parseInt(node.getText()));
+        request.setRequestId(idRequest);
         for (RequestBean item : model.getAllRequests()){
             if (item.equals(request))
                 msg.addAllMsg(model.setAsClosed(item));
         }
-        messageArea.clear();
         if (msg.isErr())
             for (String item : msg.getMsgList()){
                 messageArea.appendText(item);
@@ -207,6 +208,7 @@ public class RequestController {
 
     @FXML
     void doDeleteService( int row) {
+        messageArea.clear();
        OptionalService service = new OptionalService();
         //takes elements from the gridPane by using the input row field
         Label node = (Label)getNodeFromGridPane(gp, 0, row);
@@ -268,11 +270,9 @@ public class RequestController {
 
     /**
      * aggiorna lo stato dei servizi e dele richieste
-     * e pulisce la messageArea
      */
     private void flushInfo(){
         reasonWhyArea.clear();
-        messageArea.clear();
         clearGridPane(requestGp);
         clearGridPane(gp);
         dysplayContractField();

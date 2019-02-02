@@ -48,11 +48,11 @@ public class EvaluateController {
             GridPane.setConstraints(text3, 3, count);
 
             Button acceptBtn = new Button("accetta");
-            acceptBtn.setOnAction(e -> accept(item.getIdRequest()));
+            acceptBtn.setOnAction(e -> accept(item.getRequestId()));
             GridPane.setConstraints(acceptBtn, 4, count);
 
             Button declineBtn = new Button("rifiuta");
-            declineBtn.setOnAction(e -> decline(item.getIdRequest()));
+            declineBtn.setOnAction(e -> decline(item.getRequestId()));
             GridPane.setConstraints(declineBtn, 5, count);
 
             requestGp.getChildren().addAll(text0, text1, text2, text3, acceptBtn, declineBtn);
@@ -64,7 +64,7 @@ public class EvaluateController {
         messageArea.clear();
         ErrorMsg msg = new ErrorMsg();
         RequestBean request = new RequestBean();
-        request.setIdRequest(requestId);
+        request.setRequestId(requestId);
         for (RequestBean item : model.getSubmits()){
             if (item.equals(request))
                 msg.addAllMsg(model.decline(item));
@@ -85,7 +85,7 @@ public class EvaluateController {
         messageArea.clear();
         ErrorMsg msg = new ErrorMsg();
         RequestBean request = new RequestBean();
-        request.setIdRequest(requestId);
+        request.setRequestId(requestId);
         for (RequestBean item : model.getSubmits()){
             if (item.equals(request))
                 msg.addAllMsg(model.accept(item));

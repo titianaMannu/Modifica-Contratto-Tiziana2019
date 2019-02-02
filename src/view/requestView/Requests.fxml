@@ -223,9 +223,9 @@
                         </TextField>
                      </children>
                   </HBox>
-                  <TextArea fx:id="messageArea" onDragDetected="#doAddService" prefHeight="94.0" prefWidth="1221.0" promptText="messaggi ">
+                  <TextArea fx:id="messageArea" onDragDetected="#doAddService" prefHeight="128.0" prefWidth="1221.0" promptText="messaggi ">
                      <font>
-                        <Font size="17.0" />
+                        <Font size="15.0" />
                      </font>
                   </TextArea>
                </children>
@@ -234,8 +234,8 @@
                <children>
                   <GridPane prefHeight="96.0" prefWidth="1224.0">
                      <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="251.0" minWidth="104.0" prefWidth="104.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="393.0" minWidth="195.0" prefWidth="352.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="251.0" minWidth="104.0" prefWidth="195.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="393.0" minWidth="195.0" prefWidth="265.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="399.0" minWidth="10.0" prefWidth="330.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="209.0" minWidth="10.0" prefWidth="152.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="194.0" minWidth="10.0" prefWidth="147.0" />
@@ -265,7 +265,7 @@
                               <Font size="17.0" />
                            </font>
                         </Text>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="codice">
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Richiesta modifica">
                            <font>
                               <Font size="17.0" />
                            </font>
@@ -276,13 +276,16 @@
                      <content>
                         <GridPane fx:id="requestGp" prefHeight="151.0" prefWidth="1218.0">
                           <columnConstraints>
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="238.0" minWidth="0.0" prefWidth="105.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="596.0" minWidth="10.0" prefWidth="352.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="238.0" minWidth="0.0" prefWidth="191.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="596.0" minWidth="10.0" prefWidth="260.0" />
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="624.0" minWidth="10.0" prefWidth="328.0" />
                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="377.0" minWidth="10.0" prefWidth="158.0" />
                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="350.0" minWidth="10.0" prefWidth="135.0" />
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="293.0" minWidth="10.0" prefWidth="156.0" />
                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                           </rowConstraints>
                         </GridPane>
                      </content>
                   </ScrollPane>
