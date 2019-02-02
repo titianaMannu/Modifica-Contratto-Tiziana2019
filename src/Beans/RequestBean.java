@@ -17,9 +17,11 @@ public class RequestBean implements Serializable {
     private LocalDate date;
     private RequestStatus status;
     private int requestId;
+    private ErrorMsg msg = new ErrorMsg();
 
     public RequestBean(TypeOfModification type, Object objectToChange, String reasonWhy, LocalDate date,
-                       RequestStatus status, int requestId, String sender) throws IllegalArgumentException{
+                       RequestStatus status, int requestId, String sender) {
+
         setRequestId(requestId);
         setSender(sender);
         setType(type);
@@ -27,6 +29,7 @@ public class RequestBean implements Serializable {
         setDate(date);
         setReasonWhy(reasonWhy);
         setStatus(status);
+
     }
 
     /**
@@ -42,6 +45,7 @@ public class RequestBean implements Serializable {
         reasonWhy = "";
         status = RequestStatus.PENDING;
         requestId = -1;
+
     }
 
 
@@ -58,14 +62,22 @@ public class RequestBean implements Serializable {
     }
 
 
+    public boolean isValid(){
+        return !msg.isErr();
+    }
+
+    public ErrorMsg getMsg() {
+        return msg;
+    }
+
     public String getSender() {
         return sender;
     }
 
-    public void setSender(String sender) throws  IllegalArgumentException{
+    public void setSender(String sender) {
         if (sender!= null && !sender.isEmpty())
             this.sender = sender;
-        else throw new IllegalArgumentException("sender nick-name non corretto\n");
+        else msg.addMsg("sender nick-name non corretto\n");
     }
 
     public int getRequestId() {
@@ -73,7 +85,7 @@ public class RequestBean implements Serializable {
     }
 
     public void setRequestId(int requestId){
-        if (requestId < 1) throw new IllegalArgumentException("Specificare una richiesta esistente\n");
+        if (requestId < 1) msg.addMsg("Specificare una richiesta esistente\n");
         this.requestId = requestId;
     }
 
@@ -81,8 +93,8 @@ public class RequestBean implements Serializable {
         return status;
     }
 
-    public void setStatus(RequestStatus status) throws IllegalArgumentException{
-        if (status == null) throw new IllegalArgumentException("stato non specificato\n");
+    public void setStatus(RequestStatus status){
+        if (status == null) msg.addMsg("stato non specificato\n");
         this.status = status;
     }
 
@@ -101,8 +113,8 @@ public class RequestBean implements Serializable {
         return type;
     }
 
-    public void setType(TypeOfModification type) throws IllegalArgumentException{
-        if (type == null) throw new IllegalArgumentException("tipo di modifica non specificato\n");
+    public void setType(TypeOfModification type) {
+        if (type == null) msg.addMsg("tipo di modifica non specificato\n");
         this.type = type;
     }
 
@@ -110,8 +122,8 @@ public class RequestBean implements Serializable {
         return objectToChange;
     }
 
-    public void setObjectToChange(Object objectToChange)throws IllegalArgumentException {
-        if (objectToChange == null ) throw new IllegalArgumentException("specificare l'oggetto della modifica\n");
+    public void setObjectToChange(Object objectToChange) {
+        if (objectToChange == null ) msg.addMsg("specificare l'oggetto della modifica\n");
         this.objectToChange = objectToChange;
     }
 

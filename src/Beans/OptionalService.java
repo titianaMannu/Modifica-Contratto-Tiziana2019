@@ -10,12 +10,14 @@ public class OptionalService implements Serializable {
     private  String serviceName;
     private int servicePrice;
     private String description;
+    private ErrorMsg  msg = new ErrorMsg();
 
     public OptionalService(int serviceId, String serviceName, int servicePrice, String description) {
        setServiceId(serviceId);
        setServiceName(serviceName);
        setDescription(description);
        setServicePrice(servicePrice);
+
     }
 
     /**
@@ -25,20 +27,30 @@ public class OptionalService implements Serializable {
         setServiceName(serviceName);
         setServicePrice(servicePrice);
         setDescription(description);
+
     }
 
     public OptionalService() {
         //Bean deve avere un costruttore di default
     }
 
-    public void setServiceName(String serviceName) throws IllegalArgumentException{
-        if (serviceName!= null && !serviceName.isEmpty())
-            this.serviceName = serviceName;
-        else throw new IllegalArgumentException("specificare nome del servizio\n");
+    public boolean isValid(){
+        return !msg.isErr();
     }
 
-    public void setServicePrice(int servicePrice) throws IllegalArgumentException {
-        if (servicePrice < 1) throw new IllegalArgumentException("specificare prezzo del servizio\n");
+    public ErrorMsg getMsg() {
+        return msg;
+    }
+
+
+    public void setServiceName(String serviceName) {
+        if (serviceName!= null && !serviceName.isEmpty())
+            this.serviceName = serviceName;
+        else msg.addMsg("specificare nome del servizio\n");
+    }
+
+    public void setServicePrice(int servicePrice) {
+        if (servicePrice < 1) msg.addMsg("specificare prezzo del servizio\n");
         this.servicePrice = servicePrice;
     }
 
@@ -49,8 +61,8 @@ public class OptionalService implements Serializable {
             this.description = "";
     }
 
-    public void setServiceId(int serviceId) throws  IllegalArgumentException{
-        if (serviceId < 1) throw new IllegalArgumentException("serviceId non corretto\n");
+    public void setServiceId(int serviceId){
+        if (serviceId < 1)msg.addMsg("serviceId non corretto\n");
         this.serviceId = serviceId;
     }
 

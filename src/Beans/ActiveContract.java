@@ -18,6 +18,8 @@ public class ActiveContract implements Serializable {
     private int netPrice;
     private int frequencyOfPayment; // Mesi
     private List<OptionalService> serviceList;
+    /*campo interno*/
+    private ErrorMsg msg = new ErrorMsg();
 
 
     /**
@@ -25,8 +27,7 @@ public class ActiveContract implements Serializable {
      */
     public ActiveContract(int contractId, LocalDate stipulationDate, LocalDate terminationDate,
                           TypeOfPayment paymentMethod, String tenantName, String renterName,  int netPrice,
-                          List<OptionalService> serviceList, int frequencyOfPayment) throws IllegalArgumentException {
-
+                          List<OptionalService> serviceList, int frequencyOfPayment) {
         setContractId(contractId);
         setServiceList(serviceList);
         setFrequencyOfPayment(frequencyOfPayment);
@@ -35,12 +36,21 @@ public class ActiveContract implements Serializable {
         setPriceInfo(netPrice);
         setRenterNickname(renterName);
         setTenantNickname(tenantName);
+
     }
+
 
     public ActiveContract() {
         //Bean deve avere un costruttore di default
     }
 
+    public boolean isValid(){
+        return !msg.isErr();
+    }
+
+    public ErrorMsg getMsg() {
+        return msg;
+    }
     public int  getContractId() {
         return contractId;
     }
@@ -78,61 +88,61 @@ public class ActiveContract implements Serializable {
     }
 
 
-    public void setContractId(int contractId) throws IllegalArgumentException{
-        if (contractId < 0 ) throw new IllegalArgumentException("id del contratto non corretto\n");
+    public void setContractId(int contractId){
+        if (contractId < 0 ) msg.addMsg("id del contratto non corretto\n");
         this.contractId = contractId;
     }
 
-    private void setStipulationDate(LocalDate stipulationDate)throws IllegalArgumentException {
+    private void setStipulationDate(LocalDate stipulationDate) {
         if (stipulationDate == null)
-            throw  new IllegalArgumentException("data stipulazione non specificata\n");
+            msg.addMsg("data stipulazione non specificata\n");
         if ( !stipulationDate.isAfter(LocalDate.now())) //data stipulazione deve essere antecedente o uguale al giorno corrente
              this.stipulationDate = stipulationDate;
-        else throw new IllegalArgumentException("Data stipulazione non corretta\n");
+        else msg.addMsg("Data stipulazione non corretta\n");
     }
 
-    private void setTerminationDate(LocalDate terminationDate)throws IllegalArgumentException {
+    private void setTerminationDate(LocalDate terminationDate) {
         if (terminationDate == null)
-            throw new IllegalArgumentException("Data di terminazione non specificata\n");
+            msg.addMsg("Data di terminazione non specificata\n");
         if (stipulationDate.isAfter(terminationDate) || stipulationDate.equals(terminationDate))
-            throw new IllegalArgumentException("data di terminazione non compatibile con quella di stipulazione\n");
+           msg.addMsg("data di terminazione non compatibile con quella di stipulazione\n");
         this.terminationDate = terminationDate;
     }
 
-    public void setPeriod(LocalDate stipulationDate, LocalDate terminationDate)throws IllegalArgumentException{
+    public void setPeriod(LocalDate stipulationDate, LocalDate terminationDate){
         //prima si definisce la data di stipulazione e poi quella di terminazione
         setStipulationDate(stipulationDate);
         setTerminationDate(terminationDate);
     }
 
-    public void setPaymentMethod(TypeOfPayment paymentMethod)throws IllegalArgumentException {
-        if (paymentMethod == null) throw new IllegalArgumentException("tipo di pagamento non specificato\n");
+    public void setPaymentMethod(TypeOfPayment paymentMethod) {
+        if (paymentMethod == null) msg.addMsg("tipo di pagamento non specificato\n");
         this.paymentMethod = paymentMethod;
     }
 
-    public void setTenantNickname(String tenantNickname)throws IllegalArgumentException {
+    public void setTenantNickname(String tenantNickname) {
         if (tenantNickname != null && !tenantNickname.isEmpty())
             this.tenantNickname = tenantNickname;
-        else throw new IllegalArgumentException("tenant nickname non corretto\n");
+        else msg.addMsg("tenant nickname non corretto\n");
 
         if (renterNickname != null && renterNickname.equals(tenantNickname) )
-            throw new IllegalArgumentException("renter e tenant devono avere nickname differenti\n");
+            msg.addMsg("renter e tenant devono avere nickname differenti\n");
 
     }
 
-    public void setRenterNickname(String renterNickname) throws IllegalArgumentException {
+    public void setRenterNickname(String renterNickname){
         if (renterNickname!= null && !renterNickname.isEmpty())
              this.renterNickname = renterNickname;
-        else throw new IllegalArgumentException("renter nickname non corretto\n");
+        else msg.addMsg("renter nickname non corretto\n");
 
         if (tenantNickname != null && tenantNickname.equals(renterNickname) )
-            throw new IllegalArgumentException("renter e tenant devono avere nickname differenti\n");
+           msg.addMsg("renter e tenant devono avere nickname differenti\n");
     }
 
     /**
      *Operazione setPriceInfo che stabilisce sia  grossPrice che netPrice
      */
-    public void setPriceInfo(int netPrice) throws IllegalArgumentException{
+    public void setPriceInfo(int netPrice) {
         setNetPrice(netPrice);
         setGrossPrice();
     }
@@ -144,13 +154,13 @@ public class ActiveContract implements Serializable {
             grossPrice += item.getServicePrice();
     }
 
-    private void setNetPrice(int netPrice) throws IllegalArgumentException{
-        if (netPrice < 1) throw new IllegalArgumentException("Prezzo non significativo\n");
+    private void setNetPrice(int netPrice) {
+        if (netPrice < 1) msg.addMsg("Prezzo non significativo\n");
         this.netPrice = netPrice;
     }
 
-    public void setFrequencyOfPayment(int frequencyOfPayment) throws IllegalArgumentException{
-        if (frequencyOfPayment < 1) throw new IllegalArgumentException("frequenza (mensile) di pagamento non corretta\n");
+    public void setFrequencyOfPayment(int frequencyOfPayment){
+        if (frequencyOfPayment < 1) msg.addMsg("frequenza (mensile) di pagamento non corretta\n");
         this.frequencyOfPayment = frequencyOfPayment;
     }
 
@@ -177,4 +187,6 @@ public class ActiveContract implements Serializable {
         ActiveContract activeContract = (ActiveContract) object;
         return contractId == activeContract.contractId;
     }
+
+
 }
