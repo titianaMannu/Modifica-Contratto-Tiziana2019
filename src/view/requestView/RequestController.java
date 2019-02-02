@@ -119,28 +119,20 @@ public class RequestController {
     @FXML
     void doAddService(ActionEvent event) {
         messageArea.clear();
-        ErrorMsg msg = new ErrorMsg();
-        OptionalService service= new OptionalService();
-        msg.addAllMsg(service.setServiceName(serviceNameField.getText()));
         int price = 0;
+        OptionalService service;
         try {
           price = Integer.parseInt(servicePriceField.getText());
         } catch(NumberFormatException e){
             e.printStackTrace();
         }finally {
-            msg.addAllMsg(service.setServicePrice(price));
+           service = new OptionalService(serviceNameField.getText(), price, serviceDescriptionField.getText());
         }
-        service.setDescription(serviceDescriptionField.getText());
-        if (!msg.isErr()) {
-            try {
-                requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.ADD_SERVICE,
-                        service, LocalDate.now());
-            }catch (IllegalArgumentException e){
-                msg.addMsg(e.getMessage());
-            }
-
-            if(msg.isErr()){
-                for (String item : msg.getMsgList())
+        if (service.isValid()) {
+            requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.ADD_SERVICE,
+                    service, LocalDate.now());
+            if(!requestBean.isValid()){
+                for (String item : requestBean.getMsg().getMsgList())
                     messageArea.appendText(item);
                 return;
             }
@@ -154,25 +146,18 @@ public class RequestController {
             makeGuiVisible(true);
         }
         else
-            for (String item : msg.getMsgList())
+            for (String item : service.getMsg().getMsgList())
                 messageArea.appendText(item);
-
     }
 
     @FXML
     void doChangeDate(ActionEvent event) {
         messageArea.clear();
-        ErrorMsg msg = new ErrorMsg();
         LocalDate date = TerminationDateField.getValue();
-        try {
-            requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_TERMINATIONDATE,
-                    date, LocalDate.now());
-        }catch (IllegalArgumentException e){
-            msg.addMsg(e.getMessage());
-        }
-
-        if(msg.isErr()){
-            for (String item : msg.getMsgList())
+        requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_TERMINATIONDATE,
+                date, LocalDate.now());
+        if(!requestBean.isValid()){
+            for (String item : requestBean.getMsg().getMsgList())
                 messageArea.appendText(item);
             return;
         }
@@ -186,19 +171,13 @@ public class RequestController {
         messageArea.clear();
         ErrorMsg msg = new ErrorMsg();
         TypeOfPayment type = TypeOfPayment.getType(paymentComboBox.getValue());
-        try {
-            requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_PAYMENTMETHOD,
-                    type, LocalDate.now());
-        }catch (IllegalArgumentException e){
-            msg.addMsg(e.getMessage());
-        }
-
-        if(msg.isErr()){
-            for (String item : msg.getMsgList())
-                messageArea.appendText(item);
+        requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_PAYMENTMETHOD,
+                type, LocalDate.now());
+        if(!requestBean.isValid()){
+            for (String item : requestBean.getMsg().getMsgList())
+            messageArea.appendText(item);
             return;
         }
-
         messageArea.appendText("Sicuro di voler cambiare il metodo di pagamento?\nUna volta confermato non potrai più cambiarla\n" +
                 "Puoi specificare la ragione della richesta\n");
         makeGuiVisible(true);
@@ -265,14 +244,10 @@ public class RequestController {
                 break;
             }
 
-        try {
-            requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.REMOVE_SERVICE,
-                    service, LocalDate.now());
-        }catch (IllegalArgumentException e){
-            msg.addMsg(e.getMessage());
-        }
-        if(msg.isErr()){
-            for (String item : msg.getMsgList())
+        requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.REMOVE_SERVICE,
+                service, LocalDate.now());
+        if(!requestBean.isValid()){
+            for (String item : requestBean.getMsg().getMsgList())
                 messageArea.appendText(item);
             return;
         }
