@@ -25,7 +25,7 @@ public class ContractDao {
     public ActiveContract getContract(int contractId){
         ActiveContract activeContract = null;
         String sql = "select  stipulationDate, terminationDate, paymentMethod, tenantNickname, " +
-                "renterNickname, grossPrice, netPrice\nfrom ActiveContract\n" +
+                "renterNickname, netPrice, frequencyOfPayment\nfrom ActiveContract\n" +
                 "where idContract = ?";
         try(Connection conn = C3poDataSource.getConnection()){
             //gestione transazione non in autocommit perché prevede piú di un'operazione
@@ -36,8 +36,8 @@ public class ContractDao {
                     if (res.next()){
                         activeContract = new ActiveContract(contractId,res.getDate("stipulationDate").toLocalDate(),
                                 res.getDate("terminationDate").toLocalDate(), TypeOfPayment.valueOf(res.getInt("paymentMethod")),
-                                res.getString("tenantNickname"),res.getString("renterNickname"), res.getInt("grossPrice"),
-                                res.getInt("netPrice"), getServices(contractId));
+                                res.getString("tenantNickname"),res.getString("renterNickname"),
+                                res.getInt("netPrice"), getServices(contractId), res.getInt("frequencyOfPayment"));
                     }
                 } catch (SQLException e) {
                     conn.rollback();
