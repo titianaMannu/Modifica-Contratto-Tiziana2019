@@ -5,8 +5,8 @@ public enum TypeOfModification {
 
     ADD_SERVICE(0, "Aggiungi un servizio"),
     REMOVE_SERVICE(1, "Rimuovi un servizio"),
-    CHANGE_TERMINATIONDATE(2, "Cambia la data di scadenza"),
-    CHANGE_PAYMENTMETHOD(3, "Cambia metodo di pagamento");
+    CHANGE_TERMINATIONDATE(2, "data di scadenza"),
+    CHANGE_PAYMENTMETHOD(3, "metodo di pagamento");
 
     private String description;
     private int value;

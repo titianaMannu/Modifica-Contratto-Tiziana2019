@@ -21,11 +21,8 @@ public class RequestForModification {
     private Modification modification;
 
     /**
-     * Il controllo sui parametri viene fatto nelle funzioni setter (Incapsulamento della logica i controllo ui dati)
+     * Il controllo sui parametri viene fatto nelle funzioni setter (Incapsulamento della logica i controllo sui dati)
      * Per rendere le entità il più autonome possibili
-     * @param c : ActiveContract
-     * @param sender : String
-     * @param date
      */
     public RequestForModification(int requestId, ActiveContract c, TypeOfModification type, Object obj, String sender, String reasonWhy,
                                   LocalDate date, RequestStatus status) throws  IllegalArgumentException{
@@ -35,7 +32,6 @@ public class RequestForModification {
         if (c == null)
             throw new IllegalArgumentException("Contratto inserito non corretto\n");
         this.activeContract = c;
-        setType(type);
         setReasonWhy(reasonWhy);
         setDateOfSubmission(date);
         setSenderReceiver(sender, c);
@@ -49,7 +45,6 @@ public class RequestForModification {
         if (c == null)
             throw new IllegalArgumentException("Contratto inserito non corretto\n");
         this.activeContract = c;
-        setType(type);
         setReasonWhy(reasonWhy);
         setDateOfSubmission(date);
         setSenderReceiver(sender, c);
@@ -66,6 +61,7 @@ public class RequestForModification {
         if (modification == null){
             throw new IllegalArgumentException("Parametri della modifica non corretti\n");
         }
+        this.type = type;
         this.modification = modification;
     }
 
@@ -108,11 +104,6 @@ public class RequestForModification {
     }
 
 
-    public void setType(TypeOfModification type) throws IllegalArgumentException{
-        if( type == null)
-            throw new IllegalArgumentException("tipo della modifica non corretto\n");
-        this.type = type;
-    }
 
     public void setStatus(RequestStatus status) throws  IllegalArgumentException{
         if (status == null) throw new  IllegalArgumentException("Stato della modifica non corretto\n");
