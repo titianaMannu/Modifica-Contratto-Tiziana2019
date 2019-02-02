@@ -20,49 +20,28 @@ public class RequestBean implements Serializable {
 
     public RequestBean(TypeOfModification type, Object objectToChange, String reasonWhy, LocalDate date,
                        RequestStatus status, int requestId, String sender) throws IllegalArgumentException{
-
-        ErrorMsg msg = new ErrorMsg();
-
-        msg.addAllMsg(setRequestId(requestId));
-        msg.addAllMsg(setSender(sender));
-        msg.addAllMsg(setType(type));
-        msg.addAllMsg(setObjectToChange(objectToChange));
+        setRequestId(requestId);
+        setSender(sender);
+        setType(type);
+        setObjectToChange(objectToChange);
         setDate(date);
         setReasonWhy(reasonWhy);
-        msg.addAllMsg(setStatus(status));
-
-        if (msg.isErr()){
-            String err = "";
-            for (String str : msg.getMsgList()) {
-                err += str;
-            }
-            throw new IllegalArgumentException(err);
-        }
+        setStatus(status);
     }
 
     /**
      * costruttore per richieste a cui non è stato ancora assegnato un id
      */
-    public RequestBean(String sender, TypeOfModification type, Object objectToChange,  LocalDate date)
-                        throws IllegalArgumentException{
-        ErrorMsg msg = new ErrorMsg();
-        msg.addAllMsg(setSender(sender));
-        msg.addAllMsg(setType(type));
-        msg.addAllMsg(setObjectToChange(objectToChange));
+    public RequestBean(String sender, TypeOfModification type, Object objectToChange,  LocalDate date) {
+        setSender(sender);
+        setType(type);
+        setObjectToChange(objectToChange);
         setDate(date);
         //parametri default
 
         reasonWhy = "";
         status = RequestStatus.PENDING;
         requestId = -1;
-
-        if (msg.isErr()){
-            String err = "";
-            for (String str : msg.getMsgList()) {
-                err += str;
-            }
-            throw new IllegalArgumentException(err);
-        }
     }
 
 
@@ -83,37 +62,28 @@ public class RequestBean implements Serializable {
         return sender;
     }
 
-    public ErrorMsg setSender(String sender) {
-        ErrorMsg msg = new ErrorMsg();
+    public void setSender(String sender) throws  IllegalArgumentException{
         if (sender!= null && !sender.isEmpty())
             this.sender = sender;
-        else msg.addMsg("sender nick-name non corretto\n");
-
-        return msg;
+        else throw new IllegalArgumentException("sender nick-name non corretto\n");
     }
 
     public int getRequestId() {
         return requestId;
     }
 
-    public ErrorMsg setRequestId(int requestId){
-        ErrorMsg msg = new ErrorMsg();
-        if (requestId < 1) msg.addMsg("Specificare una richiesta esistente\n");
+    public void setRequestId(int requestId){
+        if (requestId < 1) throw new IllegalArgumentException("Specificare una richiesta esistente\n");
         this.requestId = requestId;
-
-        return msg;
     }
 
     public RequestStatus getStatus() {
         return status;
     }
 
-    public ErrorMsg setStatus(RequestStatus status){
-        ErrorMsg msg = new ErrorMsg();
-        if (status == null) msg.addMsg("stato non specificato\n");
+    public void setStatus(RequestStatus status) throws IllegalArgumentException{
+        if (status == null) throw new IllegalArgumentException("stato non specificato\n");
         this.status = status;
-
-        return msg;
     }
 
     public LocalDate getDate() {
@@ -131,24 +101,18 @@ public class RequestBean implements Serializable {
         return type;
     }
 
-    public ErrorMsg setType(TypeOfModification type) {
-        ErrorMsg msg = new ErrorMsg();
-        if (type == null) msg.addMsg("tipo di modifica non specificato\n");
+    public void setType(TypeOfModification type) throws IllegalArgumentException{
+        if (type == null) throw new IllegalArgumentException("tipo di modifica non specificato\n");
         this.type = type;
-
-        return msg;
     }
 
     public Object getObjectToChange() {
         return objectToChange;
     }
 
-    public ErrorMsg setObjectToChange(Object objectToChange) {
-        ErrorMsg msg = new ErrorMsg();
-        if (objectToChange == null ) msg.addMsg("specificare l'oggetto della modifica\n");
+    public void setObjectToChange(Object objectToChange)throws IllegalArgumentException {
+        if (objectToChange == null ) throw new IllegalArgumentException("specificare l'oggetto della modifica\n");
         this.objectToChange = objectToChange;
-
-        return msg;
     }
 
 

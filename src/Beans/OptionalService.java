@@ -2,7 +2,6 @@ package Beans;
 
 import java.io.Serializable;
 
-
 /**
  *OptionalService si occupa di incapsulare i propri dati e la loro logica di controllo
  */
@@ -12,61 +11,35 @@ public class OptionalService implements Serializable {
     private int servicePrice;
     private String description;
 
-    public OptionalService(int serviceId, String serviceName, int servicePrice, String description)
-            throws IllegalArgumentException {
-        ErrorMsg msg = new ErrorMsg();
-        msg.addAllMsg(setServiceName(serviceName));
-        msg.addAllMsg(setServicePrice(servicePrice));
-        msg.addAllMsg(setServiceId(serviceId));
-        setDescription(description);
-
-        if (msg.isErr()){
-            String err = "";
-            for (String str : msg.getMsgList()) {
-                err += str;
-            }
-            throw new IllegalArgumentException(err);
-        }
-
+    public OptionalService(int serviceId, String serviceName, int servicePrice, String description) {
+       setServiceId(serviceId);
+       setServiceName(serviceName);
+       setDescription(description);
+       setServicePrice(servicePrice);
     }
 
     /**
      * costruttore per service a cui non è stato ancora assegnato un id
      */
-    public OptionalService(String serviceName, int servicePrice, String description) throws IllegalArgumentException {
-        ErrorMsg msg = new ErrorMsg();
-        msg.addAllMsg(setServiceName(serviceName));
-        msg.addAllMsg(setServicePrice(servicePrice));
+    public OptionalService(String serviceName, int servicePrice, String description) {
+        setServiceName(serviceName);
+        setServicePrice(servicePrice);
         setDescription(description);
-
-        if (msg.isErr()){
-            String err = "";
-            for (String str : msg.getMsgList()) {
-                err += str;
-            }
-            throw new IllegalArgumentException(err);
-        }
     }
 
     public OptionalService() {
         //Bean deve avere un costruttore di default
     }
 
-    public ErrorMsg setServiceName(String serviceName){
-        ErrorMsg msg = new ErrorMsg();
+    public void setServiceName(String serviceName) throws IllegalArgumentException{
         if (serviceName!= null && !serviceName.isEmpty())
             this.serviceName = serviceName;
-        else msg.addMsg("specificare nome del servizio\n");
-
-        return msg;
+        else throw new IllegalArgumentException("specificare nome del servizio\n");
     }
 
-    public ErrorMsg setServicePrice(int servicePrice){
-        ErrorMsg msg = new ErrorMsg();
-        if (servicePrice < 1) msg.addMsg("specificare prezzo del servizio\n");
+    public void setServicePrice(int servicePrice) throws IllegalArgumentException {
+        if (servicePrice < 1) throw new IllegalArgumentException("specificare prezzo del servizio\n");
         this.servicePrice = servicePrice;
-
-        return msg;
     }
 
     public void setDescription(String description) {
@@ -76,12 +49,9 @@ public class OptionalService implements Serializable {
             this.description = "";
     }
 
-    public ErrorMsg setServiceId(int serviceId) {
-        ErrorMsg msg = new ErrorMsg();
-        if (serviceId < 1) msg.addMsg("serviceId non corretto\n");
+    public void setServiceId(int serviceId) throws  IllegalArgumentException{
+        if (serviceId < 1) throw new IllegalArgumentException("serviceId non corretto\n");
         this.serviceId = serviceId;
-
-        return msg;
     }
 
 
