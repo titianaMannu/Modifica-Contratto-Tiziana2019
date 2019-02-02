@@ -80,7 +80,7 @@ public class SubmitModel {
             return msg;
         }
         try{
-            RequestForModification request = new RequestForModification(requestBean.getIdRequest(),
+            RequestForModification request = new RequestForModification(requestBean.getRequestId(),
                     activeContract, requestBean.getType(),requestBean.getObjectToChange(), userNickname,
                     requestBean.getReasonWhy(),requestBean.getDate(), requestBean.getStatus());
 
@@ -106,7 +106,7 @@ public class SubmitModel {
             return msg;
         }
         try{
-            RequestForModification request = new RequestForModification(requestBean.getIdRequest(),
+            RequestForModification request = new RequestForModification(requestBean.getRequestId(),
                     activeContract, requestBean.getType(),requestBean.getObjectToChange(), userNickname,
                     requestBean.getReasonWhy(),requestBean.getDate(), requestBean.getStatus());
 

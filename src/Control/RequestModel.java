@@ -132,7 +132,7 @@ public class RequestModel {
                 msg.addMsg("Stato della richiesta non corretto: non può essere chiusa\n");
                 return msg;
             }
-            RequestForModification request = new RequestForModification(requestBean.getIdRequest(),
+            RequestForModification request = new RequestForModification(requestBean.getRequestId(),
                     activeContract, requestBean.getType(),requestBean.getObjectToChange(), userNickname,
                     requestBean.getReasonWhy(),requestBean.getDate(), requestBean.getStatus());
 
@@ -161,7 +161,7 @@ public class RequestModel {
             return msg;
         }
         try{
-            RequestForModification request = new RequestForModification(requestBean.getIdRequest(),
+            RequestForModification request = new RequestForModification(requestBean.getRequestId(),
                     activeContract, requestBean.getType(),requestBean.getObjectToChange(), userNickname,
                     requestBean.getReasonWhy(),requestBean.getDate(), requestBean.getStatus());
 
