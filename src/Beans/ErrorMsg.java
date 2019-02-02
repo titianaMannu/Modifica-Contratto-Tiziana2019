@@ -3,6 +3,9 @@ package Beans;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Bean per la memorizzazione di uno o piú messaggi di errore
+ */
 public class ErrorMsg {
     private List<String> msg;
 

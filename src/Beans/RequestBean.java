@@ -3,55 +3,50 @@ package Beans;
 import entity.modification.TypeOfModification;
 import entity.request.RequestStatus;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Objects;
 
+/**
+ * RequestBean si occupa di incapsulare i propri dati e la loro logica di controllo
+ */
 public class RequestBean implements Serializable {
-    //TODO controllo sui dai!
     private String sender;
     private TypeOfModification type;
     private Object objectToChange;
     private String reasonWhy;
     private LocalDate date;
     private RequestStatus status;
-    private int IdRequest;
+    private int requestId;
 
     public RequestBean(TypeOfModification type, Object objectToChange, String reasonWhy, LocalDate date,
-                       RequestStatus status, int idRequest, String sender) {
-        this.sender = sender;
-        this.type = type;
-        this.objectToChange = objectToChange;
-        this.reasonWhy = reasonWhy;
-        this.date = date;
-        this.status = status;
-        IdRequest = idRequest;
-    }
-
-    public RequestBean(String sender, TypeOfModification type, Object objectToChange, String reasonWhy, LocalDate date) {
-        this.sender = sender;
-        this.type = type;
-        this.objectToChange = objectToChange;
-        this.reasonWhy = reasonWhy;
-        this.date = date;
-        //parametri default
-
-        status = RequestStatus.PENDING;
-        IdRequest = -1;
+                       RequestStatus status, int requestId, String sender) throws IllegalArgumentException{
+        setRequestId(requestId);
+        setSender(sender);
+        setType(type);
+        setObjectToChange(objectToChange);
+        setDate(date);
+        setReasonWhy(reasonWhy);
+        setStatus(status);
     }
 
     /**
-     * bean class should have a default constructor!
+     * costruttore per richieste a cui non è stato ancora assegnato un id
      */
-    public RequestBean() {
-        sender = "";
-        type = null;
-        objectToChange = null;
+    public RequestBean(String sender, TypeOfModification type, Object objectToChange,  LocalDate date) {
+        setSender(sender);
+        setType(type);
+        setObjectToChange(objectToChange);
+        setDate(date);
+        //parametri default
+
         reasonWhy = "";
-        date = LocalDate.now();
         status = RequestStatus.PENDING;
-        IdRequest = -1;
+        requestId = -1;
+    }
+
+
+    public RequestBean() {
+        //Bean deve avere un costruttore di default
     }
 
     @Override
@@ -59,31 +54,35 @@ public class RequestBean implements Serializable {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         RequestBean that = (RequestBean) object;
-        return IdRequest == that.IdRequest;
+        return requestId == that.requestId;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(IdRequest);
-    }
 
     public String getSender() {
         return sender;
     }
 
-    public int getIdRequest() {
-        return IdRequest;
+    public void setSender(String sender) throws  IllegalArgumentException{
+        if (sender!= null && !sender.isEmpty())
+            this.sender = sender;
+        else throw new IllegalArgumentException("sender nick-name non corretto\n");
     }
 
-    public void setIdRequest(int idRequest) {
-        IdRequest = idRequest;
+    public int getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(int requestId){
+        if (requestId < 1) throw new IllegalArgumentException("Specificare una richiesta esistente\n");
+        this.requestId = requestId;
     }
 
     public RequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(RequestStatus status) {
+    public void setStatus(RequestStatus status) throws IllegalArgumentException{
+        if (status == null) throw new IllegalArgumentException("stato non specificato\n");
         this.status = status;
     }
 
@@ -92,14 +91,18 @@ public class RequestBean implements Serializable {
     }
 
     public void setDate(LocalDate date) {
-        this.date = date;
+        if (date == null)
+            this.date = LocalDate.now();
+        else
+            this.date = date;
     }
 
     public TypeOfModification getType() {
         return type;
     }
 
-    public void setType(TypeOfModification type) {
+    public void setType(TypeOfModification type) throws IllegalArgumentException{
+        if (type == null) throw new IllegalArgumentException("tipo di modifica non specificato\n");
         this.type = type;
     }
 
@@ -107,7 +110,8 @@ public class RequestBean implements Serializable {
         return objectToChange;
     }
 
-    public void setObjectToChange(Object objectToChange) {
+    public void setObjectToChange(Object objectToChange)throws IllegalArgumentException {
+        if (objectToChange == null ) throw new IllegalArgumentException("specificare l'oggetto della modifica\n");
         this.objectToChange = objectToChange;
     }
 
@@ -117,7 +121,10 @@ public class RequestBean implements Serializable {
     }
 
     public void setReasonWhy(String reasonWhy) {
-        this.reasonWhy = reasonWhy;
+        if (reasonWhy != null && !reasonWhy.isEmpty())
+            this.reasonWhy = reasonWhy;
+        else
+            this.reasonWhy = "";
     }
 
 }
