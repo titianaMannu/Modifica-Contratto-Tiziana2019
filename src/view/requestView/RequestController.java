@@ -13,6 +13,7 @@ import Beans.OptionalService;
 import entity.TypeOfPayment;
 import entity.modification.TypeOfModification;
 import entity.request.RequestStatus;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,6 +21,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import view.init_page.RefreshRequestThread;
 
 
 public class RequestController {
@@ -260,7 +262,7 @@ public class RequestController {
      * mostra i campi del contratto inizializzando la pagina
      */
     @FXML
-    public void dysplayContractField(){
+    public void displayContractField(){
         int count = 0;
         ActiveContract contract = model.getContract();
         idContractField.setText(String.valueOf(contract.getContractId()));
@@ -300,12 +302,25 @@ public class RequestController {
     /**
      * aggiorna lo stato dei servizi e dele richieste
      */
-    private void flushInfo(){
-        reasonWhyArea.clear();
-        clearGridPane(requestGp);
-        clearGridPane(gp);
-        dysplayContractField();
-        doViewRequests();
+    public void flushInfo() {
+        Platform.runLater(()-> {
+            reasonWhyArea.clear();
+            clearGridPane(requestGp);
+            clearGridPane(gp);
+            displayContractField();
+            doViewRequests();
+        });
+    }
+
+
+
+    public void refrshAvailable(boolean b){
+        if (b) {
+           RefreshRequestThread thread = new RefreshRequestThread(this);
+            thread.setDaemon(false);
+            thread.start();
+        }
+
     }
 
 
@@ -316,25 +331,12 @@ public class RequestController {
 
     @FXML
     void initialize() {
-        assert frequencyField != null : "fx:id=\"frequencyField\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert tenantField != null : "fx:id=\"tenantField\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert renterField != null : "fx:id=\"renterField\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert grossPriceField != null : "fx:id=\"grossPriceField\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert netPriceField != null : "fx:id=\"netPriceField\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert initDateField != null : "fx:id=\"initDateField\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert TerminationDateField != null : "fx:id=\"TerminationDateField\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert changeDateBtn != null : "fx:id=\"changeDateBtn\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert paymentComboBox != null : "fx:id=\"paymentComboBox\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert changePaymentBtn != null : "fx:id=\"changePaymentBtn\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert addServiceBtn != null : "fx:id=\"addServiceBtn\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert confirmationBtn != null : "fx:id=\"confirmationBtn\" was not injected: check your FXML file 'Requests.fxml'.";
-        assert messageArea != null : "fx:id=\"messageArea\" was not injected: check your FXML file 'Requests.fxml'.";
-
         //riempimento della combobox preliminare
         for (TypeOfPayment item : TypeOfPayment.values()){
-            paymentComboBox.getItems().add(item.getDescription());
+            paymentComboBox.getItems().add( item.getValue(), item.getDescription());
         }
         makeGuiVisible(false);
 
     }
+
 }

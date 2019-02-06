@@ -3,6 +3,7 @@ package view.evaluateSubmitsView;
 import Beans.ErrorMsg;
 import Beans.RequestBean;
 import Control.SubmitModel;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -10,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import view.init_page.RefreshEvaluateThread;
 
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class EvaluateController {
     @FXML
     private TextArea messageArea;
 
-    SubmitModel model;
+    private SubmitModel model;
 
     public void setModel(SubmitModel model) {
         this.model = model;
@@ -100,15 +102,25 @@ public class EvaluateController {
     }
 
 
+    public void refrshAvailable(boolean b){
+        if (b) {
+            RefreshEvaluateThread thread = new RefreshEvaluateThread(this);
+            thread.setDaemon(false);
+            thread.start();
+        }
+
+    }
+
     private void clearGridPane(GridPane gp){
         ObservableList<Node> childrens = gp.getChildren();
         childrens.clear();
     }
 
-    private void flushInfo(){
-        clearGridPane(requestGp);
-        doViewRequests();
+    public void flushInfo(){
+        Platform.runLater(()->{
+            clearGridPane(requestGp);
+            doViewRequests();
+        });
     }
-
 
 }
