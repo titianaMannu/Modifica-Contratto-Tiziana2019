@@ -39,14 +39,18 @@ public class InitController  {
     }
 
     @FXML
+    private Label UserName;
+
+    @FXML
     private GridPane gp;
 
     /**
      * riempimento dinamico della GridPane
      * todo da aggiornare periodicamente il # delle richieste arivate per un contratto
      */
-    public void viewContracts () {
+    private void viewContracts () {
         if (initModel == null) return;
+        UserName.setText(initModel.getUserNickname());
         List<ActiveContract> list = initModel.getAllContract();
         int count = 0;
         for (ActiveContract contract : list) {

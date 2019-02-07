@@ -11,10 +11,9 @@ public class RefreshTread extends Thread {
 
     @Override
     public void run() {
-        long timeout = 3000;
+        long timeout = 5000;
         while (true){
            try {
-            //   System.out.println("ciao");
                initController.flushInfo();
                 Thread.sleep(timeout);
             } catch (InterruptedException e) {

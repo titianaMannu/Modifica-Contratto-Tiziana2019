@@ -10,7 +10,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        String userNickName = "pluto"; // i realtà deve essere passato da un altro controller che fa le veci del main
+        String userNickName = "paperino"; // i realtà deve essere passato da un altro controller che fa le veci del main
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("init_view.fxml"));
         BorderPane root = loader.load();
@@ -19,7 +19,6 @@ public class Main extends Application {
         model.setUserNickname(userNickName);
         controller.setInitModel(model);
         controller.refrshAvailable(true);
-
         primaryStage.setTitle("Gestione Contratti");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
