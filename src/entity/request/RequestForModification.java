@@ -51,6 +51,14 @@ public class RequestForModification {
         setStatus(status);
     }
 
+
+    /**
+     * valida la richiesta per il contratto
+     */
+    public boolean validate(){
+        return modification.validate(activeContract);
+    }
+
     public void setRequestId(int requestId)throws IllegalArgumentException {
         if (requestId < 1) throw new IllegalArgumentException("Specificare una richiesta esistente\n");
         this.requestId = requestId;
@@ -109,6 +117,7 @@ public class RequestForModification {
         if (status == null) throw new  IllegalArgumentException("Stato della modifica non corretto\n");
         this.status = status;
     }
+
 
     public LocalDate getDateOfSubmission() {
         return dateOfSubmission;
