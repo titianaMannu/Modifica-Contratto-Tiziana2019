@@ -24,11 +24,14 @@ import java.util.List;
 
 public class RequestModel {
     private String userNickname = "";
-    private ActiveContract activeContract;
+    private ActiveContract activeContract = null;
 
     public RequestModel(String userNickname, int contractId) {
         setUserNickname(userNickname);
         setActiveContract(contractId);
+    }
+
+    public RequestModel() {
     }
 
     public ActiveContract getContract(){
@@ -81,12 +84,12 @@ public class RequestModel {
             }
             RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(requestBean.getType());
             try {//prima di inserire una richiesta nel sistema ne fa la validazione
-                if ( !request.getModification().validate( request.getActiveContract() )){
+                if ( !request.validate() ){
                     msg.addMsg("Specificare una modifica significativa\n");
                     return msg;
                 }
                 else if (! dao.validateRequest(request) ){
-                    msg.addMsg("Esiste giá una richiesta per questa modifca\nControlla nel pannello di riepilogo\n");
+                    msg.addMsg("Esiste giá una richiesta per questa modifca\nControlla nel pannello di riepilogo o tra le proposte che ti sono state fatte\n");
                     return msg;
                 }
 
@@ -113,7 +116,7 @@ public class RequestModel {
                 List<RequestBean> tmp = dao.getRequests(activeContract, userNickname);
                 list.addAll(tmp);
             }
-        }catch (NullPointerException e){
+        }catch (IllegalArgumentException e){//caso in cui factory riscontra un errore
            e.printStackTrace();
         }
         return list;
