@@ -80,9 +80,14 @@ public class ContractDao {
             st.setString(1, userNickName);
             ResultSet res = st.executeQuery();
             while (res.next()){
-                ActiveContract contract = getContract(res.getInt("idContract"));
-                if (contract != null){
-                    list.add(contract);
+                try {
+                    ActiveContract contract = getContract(res.getInt("idContract"));
+                    if (contract != null) {
+                        list.add(contract);
+                    }
+                }catch(IllegalArgumentException e){
+                    e.printStackTrace();
+                    continue;
                 }
             }
         } catch (SQLException e) {
