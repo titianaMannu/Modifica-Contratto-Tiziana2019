@@ -1,5 +1,5 @@
 package entity.modification;
-import Beans.ActiveContract;
+import entity.ActiveContract;
 
 public abstract class Modification {
     protected Object objectToChange;

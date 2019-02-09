@@ -1,9 +1,10 @@
 package DAO.modificationDAO;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import Beans.RequestBean;
 import DAO.C3poDataSource;
-import Beans.OptionalService;
+//import Beans.OptionalServiceBean;
+import entity.OptionalService;
 import entity.modification.Modification;
 import entity.modification.ModificationFactory;
 import entity.modification.RemoveServiceModification;
@@ -186,7 +187,7 @@ public class RemoveServiceModfcDao extends RequestForModificationDao {
      @return : una lista contenete tutte le richieste  relative contrat e inviate da sender
      */
     @Override
-    public List<RequestBean> getRequests(ActiveContract activeContract, String sender) throws NullPointerException {
+    public List<RequestBean> getRequests(ActiveContract activeContract, String sender){
         if (activeContract == null || sender == null || sender.isEmpty())
             throw new NullPointerException("Specificare il contratto e il mittente\n");
 
@@ -205,7 +206,7 @@ public class RemoveServiceModfcDao extends RequestForModificationDao {
                 //tipo di modifica è di tipo REMOVE_SERVICE  in questo caso
                 Modification modfc = getModification(activeContract.getContractId(), res.getInt("idRequest"));
                 if (modfc == null)
-                    throw new NullPointerException("modifica non trovata\n");
+                  continue;
 
                 RequestBean request = new RequestBean(TypeOfModification.REMOVE_SERVICE,
                         modfc.getObjectToChange(), res.getString("reasonWhy"), res.getDate("dateOfSubmission").toLocalDate(),
@@ -225,7 +226,7 @@ public class RemoveServiceModfcDao extends RequestForModificationDao {
      *@return una lista contenete tutte le richieste PENDING relative contrat e destinate a receiver
      */
     @Override
-    public List<RequestBean> getSubmits(ActiveContract activeContract, String receiver) throws NullPointerException {
+    public List<RequestBean> getSubmits(ActiveContract activeContract, String receiver){
             if (activeContract == null || receiver == null || receiver.isEmpty())
                 throw new NullPointerException("Specificare il contratto e il destinatario\n");
 
@@ -245,7 +246,7 @@ public class RemoveServiceModfcDao extends RequestForModificationDao {
                     //tipo di modifica è di tipo REMOVE_SERVICE  in questo caso
                     Modification modfc = getModification(activeContract.getContractId(), res.getInt("idRequest"));
                     if (modfc == null)
-                        throw new NullPointerException("tipo di richiesta e modifica non compatibili\n");
+                       continue;
 
                     RequestBean request = new RequestBean(TypeOfModification.REMOVE_SERVICE,
                             modfc.getObjectToChange(), res.getString("reasonWhy"), res.getDate("dateOfSubmission").toLocalDate(),

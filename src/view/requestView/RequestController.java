@@ -5,11 +5,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import Beans.ErrorMsg;
 import Beans.RequestBean;
 import Control.RequestModel;
-import Beans.OptionalService;
+import Beans.OptionalServiceBean;
+import entity.OptionalService;
 import entity.TypeOfPayment;
 import entity.modification.TypeOfModification;
 import entity.request.RequestStatus;
@@ -115,6 +116,7 @@ public class RequestController {
             messageArea.appendText("inserimento riuscito!\n");
         }
         flushInfo();
+        reasonWhyArea.clear();
         makeGuiVisible(false);
     }
 
@@ -122,13 +124,13 @@ public class RequestController {
     void doAddService(ActionEvent event) {
         messageArea.clear();
         int price = 0;
-        OptionalService service;
+        OptionalServiceBean service;
         try {
           price = Integer.parseInt(servicePriceField.getText());
         } catch(NumberFormatException e){
             e.printStackTrace();
         }finally {
-           service = new OptionalService(serviceNameField.getText(), price, serviceDescriptionField.getText());
+           service = new OptionalServiceBean(serviceNameField.getText(), price, serviceDescriptionField.getText());
         }
         if (service.isValid()) {
             requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.ADD_SERVICE,
@@ -171,7 +173,6 @@ public class RequestController {
     @FXML
     void doChangePayment(ActionEvent event) {
         messageArea.clear();
-        ErrorMsg msg = new ErrorMsg();
         TypeOfPayment type = TypeOfPayment.getType(paymentComboBox.getValue());
         requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_PAYMENTMETHOD,
                 type, LocalDate.now());
@@ -222,7 +223,7 @@ public class RequestController {
         request.setRequestId(idRequest);
         for (RequestBean item : model.getAllRequests()){
             if (item.equals(request))
-                msg.addAllMsg(model.setAsClosed(item));
+                msg.addAllMsg(model.deleteRequest(item));
         }
         if (msg.isErr())
             for (String item : msg.getMsgList()){
@@ -236,12 +237,10 @@ public class RequestController {
     @FXML
     void doDeleteService( int serviceId) {
         messageArea.clear();
-        ErrorMsg msg = new ErrorMsg();
-        OptionalService service = new OptionalService();
+        OptionalService service = null;
         //takes elements from the gridPane by using the input row field
-        service.setServiceId(serviceId);
         for (OptionalService item : model.getContract().getServiceList())
-            if (item.equals(service)){ //mi basta sapere l'id per ricavare tutti i campi del servizio in questione
+            if (item.getServiceId() == serviceId){ //mi basta sapere l'id per ricavare tutti i campi del servizio in questione
                 service = item;
                 break;
             }
@@ -303,8 +302,8 @@ public class RequestController {
      * aggiorna lo stato dei servizi e dele richieste
      */
     public void flushInfo() {
+        model.setActiveContract(model.getContract().getContractId());
         Platform.runLater(()-> {
-            reasonWhyArea.clear();
             clearGridPane(requestGp);
             clearGridPane(gp);
             displayContractField();

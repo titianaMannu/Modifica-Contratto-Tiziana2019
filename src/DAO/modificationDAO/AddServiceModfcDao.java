@@ -1,9 +1,10 @@
 package DAO.modificationDAO;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import Beans.RequestBean;
 import DAO.C3poDataSource;
-import Beans.OptionalService;
+import Beans.OptionalServiceBean;
+import entity.OptionalService;
 import entity.modification.AddServiceModification;
 import entity.modification.Modification;
 import entity.modification.ModificationFactory;
@@ -40,11 +41,11 @@ public class AddServiceModfcDao extends RequestForModificationDao {
 
         if (request == null) throw new NullPointerException("Specificare una richiesta\n");
 
-        if (! (request.getModification() instanceof AddServiceModification))
+        Modification modification = request.getModification();
+        if (!(modification instanceof AddServiceModification))
             throw new IllegalArgumentException("Argomento deve essere di tipo AddServiceModification\n");
 
-        AddServiceModification modification = (AddServiceModification)request.getModification();
-        OptionalService service = modification.getObjectToChange();
+        OptionalService service = (OptionalService)modification.getObjectToChange();
         String sql_1, sql_2;
         sql_1= "update OptionalService set ActiveContract_idContract = ?\n" +
                 "where idService = ?";
@@ -144,11 +145,12 @@ public class AddServiceModfcDao extends RequestForModificationDao {
             throws IllegalArgumentException, NullPointerException, SQLException {
 
         if (request == null ) throw new NullPointerException("Specificare una richiesta\n");
-        if (! (request.getModification() instanceof AddServiceModification))
+
+        Modification modification = request.getModification();
+        if (! (modification instanceof AddServiceModification))
             throw new IllegalArgumentException("Argomento deve essere di tipo AddServiceModification\n");
 
-        AddServiceModification modification = (AddServiceModification)request.getModification();
-        OptionalService service =  modification.getObjectToChange();
+        OptionalService service = (OptionalService)modification.getObjectToChange();
         String sql = "select name as serviceName, price as servicePrice\n" +
                 "from AddServiceModification as m join requestForModification as rm on m.requestId = rm.idRequest " +
                 "&& m.requestC = ?\njoin OptionalService OS on m.service = OS.idService\n" +
@@ -202,7 +204,7 @@ public class AddServiceModfcDao extends RequestForModificationDao {
      * Viene ritornato un elenco completo indipendentemente dallo stato
      */
     @Override
-    public List<RequestBean> getRequests(ActiveContract activeContract, String sender)throws NullPointerException{
+    public List<RequestBean> getRequests(ActiveContract activeContract, String sender){
         if (activeContract == null || sender == null || sender.isEmpty())
             throw new NullPointerException("Specificare il contratto e il mittente\n");
 
@@ -222,8 +224,7 @@ public class AddServiceModfcDao extends RequestForModificationDao {
                 //tipo di modifica è di tipo addService in questo caso
                 Modification modfc = getModification(activeContract.getContractId(), res.getInt("idRequest"));
                 if (modfc == null)
-                    throw new NullPointerException("modifica non trovata\n");
-
+                   continue;
                 //creo la richiesta
                 RequestBean request = new RequestBean(TypeOfModification.ADD_SERVICE,
                         modfc.getObjectToChange(), res.getString("reasonWhy"), res.getDate("dateOfSubmission").toLocalDate(),
@@ -244,7 +245,7 @@ public class AddServiceModfcDao extends RequestForModificationDao {
      *  @return una lista contenete tutte le richieste  relative contrat e destinate a receiver
      */
     @Override
-    public List<RequestBean> getSubmits(ActiveContract activeContract, String receiver) throws NullPointerException{
+    public List<RequestBean> getSubmits(ActiveContract activeContract, String receiver){
         if (activeContract == null || receiver == null || receiver.isEmpty())
             throw new NullPointerException("Specificare il contratto e il destinatario\n");
 
@@ -264,7 +265,7 @@ public class AddServiceModfcDao extends RequestForModificationDao {
                 //tipo di modifica è di tipo addService in questo caso
                 Modification modfc = getModification(activeContract.getContractId(), res.getInt("idRequest"));
                 if (modfc == null)
-                    throw new NullPointerException("modifica non trovata\n");
+                    continue;
                 //creo la richiesta
                 RequestBean request = new RequestBean(TypeOfModification.ADD_SERVICE,
                         modfc.getObjectToChange(), res.getString("reasonWhy"), res.getDate("dateOfSubmission").toLocalDate(),

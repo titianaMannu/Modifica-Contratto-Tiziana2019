@@ -1,13 +1,12 @@
 package DAO.modificationDAO;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import Beans.RequestBean;
 import DAO.C3poDataSource;
 import entity.modification.Modification;
 import entity.request.RequestForModification;
 import entity.request.RequestStatus;
 
-import javax.xml.bind.ValidationException;
 import java.sql.*;
 import java.util.List;
 
@@ -72,7 +71,7 @@ public abstract class RequestForModificationDao {
     /**
      @return : una lista contenete tutte le proposte relative a contrat e fatte da sender
      */
-    public abstract List<RequestBean> getRequests(ActiveContract activeContract, String sender) throws NullPointerException;
+    public abstract List<RequestBean> getRequests(ActiveContract activeContract, String sender);
 
     /**
      *@return una lista contenete tutte le richieste PENDING relative a contrat e destinate a receiver

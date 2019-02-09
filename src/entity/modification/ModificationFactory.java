@@ -1,15 +1,16 @@
 package entity.modification;
 
+import Beans.OptionalServiceBean;
+import entity.OptionalService;
+
 public class ModificationFactory {
 
-    private static ModificationFactory ourInstance = null;
+    private static ModificationFactory ourInstance = new ModificationFactory();
 
     /**
      * using singleton pattern to obtain the only one factory
      */
     public static synchronized ModificationFactory getInstance() {
-        if (ourInstance == null)
-            ourInstance = new ModificationFactory();
         return ourInstance;
     }
 
@@ -26,13 +27,13 @@ public class ModificationFactory {
         try {
             switch (inType) {
                 case ADD_SERVICE:
-                    return new AddServiceModification(objectToChange);
+                    return createAddServiceModfc(objectToChange);
                 case REMOVE_SERVICE:
-                    return new RemoveServiceModification(objectToChange);
+                    return createRemoveServiceModfc(objectToChange);
                 case CHANGE_PAYMENTMETHOD:
-                    return new PaymentMethodModification(objectToChange);
+                    return createPaymentModfc(objectToChange);
                 case CHANGE_TERMINATIONDATE:
-                    return new TerminationDateModification(objectToChange);
+                    return createTerminationDateModfc(objectToChange);
                 default:
                     return null;
             }
@@ -42,5 +43,36 @@ public class ModificationFactory {
             return  null;
         }
 
+    }
+
+    /**
+     * viene fatta la creazione della entity service e passata alla modifica.
+     */
+    private Modification createAddServiceModfc(Object objectToChange) throws IllegalArgumentException{
+        if (objectToChange instanceof OptionalService)
+            return new AddServiceModification(objectToChange);
+        if (!(objectToChange instanceof OptionalServiceBean)) throw  new IllegalArgumentException();
+        OptionalServiceBean obj = (OptionalServiceBean)objectToChange;
+        OptionalService optionalService = new OptionalService(obj.getServiceName(), obj.getServicePrice(), obj.getDescription());
+        return new AddServiceModification(optionalService);
+    }
+
+    private Modification createRemoveServiceModfc(Object objectToChange)
+                        throws  IllegalArgumentException, IllegalStateException{
+        if (objectToChange instanceof OptionalService)
+            return new RemoveServiceModification(objectToChange);
+        if (!(objectToChange instanceof OptionalServiceBean)) throw  new IllegalArgumentException();
+        OptionalServiceBean obj = (OptionalServiceBean)objectToChange;
+        OptionalService optionalService = new OptionalService(obj.getServiceId(), obj.getServiceName(), obj.getServicePrice(),
+                obj.getDescription());
+        return new RemoveServiceModification(optionalService);
+    }
+
+    private Modification createPaymentModfc(Object objectToChange) throws  IllegalArgumentException{
+        return new PaymentMethodModification(objectToChange);
+    }
+
+    private Modification createTerminationDateModfc(Object objectToChange) throws IllegalArgumentException{
+        return new TerminationDateModification(objectToChange);
     }
 }

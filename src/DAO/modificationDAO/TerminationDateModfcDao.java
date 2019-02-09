@@ -1,13 +1,12 @@
 package DAO.modificationDAO;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import Beans.RequestBean;
 import DAO.C3poDataSource;
 import entity.modification.*;
 import entity.request.RequestForModification;
 import entity.request.RequestStatus;
 
-import javax.xml.bind.ValidationException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -149,7 +148,7 @@ public class TerminationDateModfcDao extends RequestForModificationDao {
      @return : una lista contenete tutte le richieste  relative contrat e inviate da sender
      */
     @Override
-    public List<RequestBean> getRequests(ActiveContract activeContract, String sender) throws NullPointerException {
+    public List<RequestBean> getRequests(ActiveContract activeContract, String sender){
         if (activeContract == null || sender == null || sender.isEmpty())
             throw new NullPointerException("Specificare il contratto e il mittente\n");
 
@@ -168,8 +167,7 @@ public class TerminationDateModfcDao extends RequestForModificationDao {
                 //tipo di modifica è di tipo CHANGE_PAYMENTMETHOD in questo caso
                 Modification modfc = getModification(activeContract.getContractId(), res.getInt("idRequest"));
                 if (modfc == null)
-                    throw new NullPointerException("modifica non trovata\n");
-
+                    continue;
                 RequestBean request = new RequestBean(TypeOfModification.CHANGE_TERMINATIONDATE,
                         modfc.getObjectToChange(), res.getString("reasonWhy"), res.getDate("dateOfSubmission").toLocalDate(),
                         RequestStatus.valueOf(res.getInt("status")), res.getInt("idRequest"), sender);
@@ -203,8 +201,7 @@ public class TerminationDateModfcDao extends RequestForModificationDao {
                 //tipo di modifica è di tipo REMOVE_SERVICE  in questo caso
                 Modification modfc = getModification(activeContract.getContractId(), res.getInt("idRequest"));
                 if (modfc == null)
-                    throw new NullPointerException("modifica non trovata\n");
-
+                  continue;
                 RequestBean request = new RequestBean(TypeOfModification.CHANGE_TERMINATIONDATE,
                         modfc.getObjectToChange(), res.getString("reasonWhy"), res.getDate("dateOfSubmission").toLocalDate(),
                         RequestStatus.PENDING, res.getInt("idRequest"), res.getString("senderNickname"));

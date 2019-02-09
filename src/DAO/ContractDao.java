@@ -1,7 +1,7 @@
 package DAO;
 
-import Beans.ActiveContract;
-import Beans.OptionalService;
+import entity.ActiveContract;
+import entity.OptionalService;
 import entity.TypeOfPayment;
 import entity.UserType;
 import java.sql.Connection;
@@ -38,7 +38,7 @@ public class ContractDao {
                                 res.getDate("terminationDate").toLocalDate(), TypeOfPayment.valueOf(res.getInt("paymentMethod")),
                                 res.getString("tenantNickname"),res.getString("renterNickname"),
                                 res.getInt("netPrice"), getServices(contractId), res.getInt("frequencyOfPayment"));
-                    }
+                         }
                 } catch (SQLException e) {
                     conn.rollback();
                     conn.setAutoCommit(true);

@@ -1,18 +1,14 @@
 package view.init_page;
 
-import java.net.URL;
 import java.util.List;
-import java.util.Observable;
-import java.util.ResourceBundle;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import Control.RequestModel;
 import Control.SubmitModel;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,9 +20,6 @@ import javafx.stage.StageStyle;
 import view.evaluateSubmitsView.EvaluateController;
 import view.requestView.RequestController;
 
-/**
- * todo thread che aggiorna periodicamente la griglia dei contratti e le relative informazioni
- */
 public class InitController  {
     private InitModel initModel;
 
@@ -46,7 +39,6 @@ public class InitController  {
 
     /**
      * riempimento dinamico della GridPane
-     * todo da aggiornare periodicamente il # delle richieste arivate per un contratto
      */
     private void viewContracts () {
         if (initModel == null) return;
@@ -113,11 +105,8 @@ public class InitController  {
             BorderPane root1= loader.load();
             RequestController controller = loader.getController();
             controller.setModel(requestModel);
-
             // thread per aggiornare periodicamente lo stato delle richieste
             controller.refrshAvailable(true);
-     //       controller.displayContractField();
-          //  controller.doViewRequests();
 
             Stage stage = new Stage();
             stage.initStyle(StageStyle.DECORATED);

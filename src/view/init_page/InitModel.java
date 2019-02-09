@@ -1,6 +1,6 @@
 package view.init_page;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import Beans.ErrorMsg;
 import Beans.RequestBean;
 import DAO.ContractDao;

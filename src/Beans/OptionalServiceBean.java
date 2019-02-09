@@ -5,32 +5,30 @@ import java.io.Serializable;
 /**
  *OptionalService si occupa di incapsulare i propri dati e la loro logica di controllo
  */
-public class OptionalService implements Serializable {
+public class OptionalServiceBean implements Serializable {
     private int serviceId = -1;
     private  String serviceName;
     private int servicePrice;
     private String description;
-    private ErrorMsg  msg = new ErrorMsg();
+    private ErrorMsg msg = new ErrorMsg();
 
-    public OptionalService(int serviceId, String serviceName, int servicePrice, String description) {
+    public OptionalServiceBean(int serviceId, String serviceName, int servicePrice, String description) {
        setServiceId(serviceId);
        setServiceName(serviceName);
        setDescription(description);
        setServicePrice(servicePrice);
-
     }
 
     /**
      * costruttore per service a cui non è stato ancora assegnato un id
      */
-    public OptionalService(String serviceName, int servicePrice, String description) {
+    public OptionalServiceBean(String serviceName, int servicePrice, String description) {
         setServiceName(serviceName);
         setServicePrice(servicePrice);
         setDescription(description);
-
     }
 
-    public OptionalService() {
+    public OptionalServiceBean() {
         //Bean deve avere un costruttore di default
     }
 
@@ -92,7 +90,7 @@ public class OptionalService implements Serializable {
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
-        OptionalService service = (OptionalService) object;
+        OptionalServiceBean service = (OptionalServiceBean) object;
         return serviceId == service.serviceId;
     }
 

@@ -1,12 +1,11 @@
 package entity.request;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import entity.modification.Modification;
 import entity.modification.ModificationFactory;
 import entity.modification.TypeOfModification;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 
 public class RequestForModification {
@@ -16,6 +15,7 @@ public class RequestForModification {
     private LocalDate dateOfSubmission;
     private RequestStatus status;
     private int requestId =  -1;
+    /** Aggrega il contratto: non ha senso che esista una rischiesta di modifica senza il contratto*/
     private ActiveContract activeContract;
     private TypeOfModification type;
     private Modification modification;

@@ -1,5 +1,5 @@
 package entity.modification;
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import entity.TypeOfPayment;
 
 public class PaymentMethodModification extends Modification {

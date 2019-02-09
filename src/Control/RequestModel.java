@@ -1,6 +1,6 @@
 package Control;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import Beans.RequestBean;
 
 import DAO.ContractDao;
@@ -19,7 +19,6 @@ import java.util.List;
  * visualizza proposte
  * ottieni contratto
  * chiudi richiesta (segna come letto)
- *
  */
 
 public class RequestModel {
@@ -57,8 +56,8 @@ public class RequestModel {
         ActiveContract activeContract = dao.getContract(contractId);
         if (activeContract == null)
             msg.addMsg("Il contratto selezionato non è stato trovato\nPotrebbe non essere più attivo\n");
-        else if (!(activeContract.getRenterNickname().equals(userNickname) ||
-                activeContract.getTenantNickname().equals(userNickname)) )
+        else if (!(activeContract.getRenterNickname().equals(this.userNickname) ||
+                activeContract.getTenantNickname().equals(this.userNickname)) )
             msg.addMsg("UserName e/o codice contratto non compatibili\n");
         else
             this.activeContract = activeContract;
@@ -75,8 +74,8 @@ public class RequestModel {
                 return msg;
             }
             try {
-                 request = new RequestForModification(activeContract, requestBean.getType(),
-                        requestBean.getObjectToChange(), userNickname, requestBean.getReasonWhy(),
+                 request = new RequestForModification(this.activeContract, requestBean.getType(),
+                        requestBean.getObjectToChange(), this.userNickname, requestBean.getReasonWhy(),
                         requestBean.getDate(), requestBean.getStatus());
             }catch (IllegalArgumentException e){
                 msg.addMsg(e.getMessage());
@@ -113,7 +112,7 @@ public class RequestModel {
         try{
             for (TypeOfModification type : TypeOfModification.values()) {
                 RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(type);
-                List<RequestBean> tmp = dao.getRequests(activeContract, userNickname);
+                List<RequestBean> tmp = dao.getRequests(this.activeContract, this.userNickname);
                 list.addAll(tmp);
             }
         }catch (IllegalArgumentException e){//caso in cui factory riscontra un errore
@@ -130,13 +129,13 @@ public class RequestModel {
     public ErrorMsg deleteRequest(RequestBean requestBean){
         ErrorMsg msg = new ErrorMsg();
         try{
-            if (requestBean.getStatus() != RequestStatus.CLOSED){
+            if (requestBean.getStatus() == RequestStatus.PENDING){
                 //le richieste possono essere fatte solo se sono nello stato CLOSED
                 msg.addMsg("Stato della richiesta non corretto: non può essere chiusa\n");
                 return msg;
             }
             RequestForModification request = new RequestForModification(requestBean.getRequestId(),
-                    activeContract, requestBean.getType(),requestBean.getObjectToChange(), userNickname,
+                    this.activeContract, requestBean.getType(),requestBean.getObjectToChange(), this.userNickname,
                     requestBean.getReasonWhy(),requestBean.getDate(), requestBean.getStatus());
 
             RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(requestBean.getType());
@@ -165,7 +164,7 @@ public class RequestModel {
         }
         try{
             RequestForModification request = new RequestForModification(requestBean.getRequestId(),
-                    activeContract, requestBean.getType(),requestBean.getObjectToChange(), userNickname,
+                    this.activeContract, requestBean.getType(),requestBean.getObjectToChange(), this.userNickname,
                     requestBean.getReasonWhy(),requestBean.getDate(), requestBean.getStatus());
 
             RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(requestBean.getType());

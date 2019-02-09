@@ -20,7 +20,6 @@ public class C3poDataSource {
             cpds.setPassword("M.odificatore");
         } catch (PropertyVetoException e) {
             System.exit(-1);
-            // handle the exception
         }
     }
 
