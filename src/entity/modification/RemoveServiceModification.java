@@ -35,4 +35,11 @@ public class RemoveServiceModification extends Modification {
                 return true;
         return false;
     }
+
+    @Override
+    public void update(ActiveContract contract) {
+
+    }
+
+
 }

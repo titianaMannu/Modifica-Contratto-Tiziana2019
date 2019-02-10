@@ -19,6 +19,11 @@ public class TerminationDateModification extends Modification {
     }
 
     @Override
+    public void update(ActiveContract contract) {
+
+    }
+
+    @Override
     public void setObjectToChange(Object objectToChange) throws IllegalArgumentException {
         super.setObjectToChange(objectToChange);
         if (!(objectToChange instanceof LocalDate)) {

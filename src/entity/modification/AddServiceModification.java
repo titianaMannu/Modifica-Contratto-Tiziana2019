@@ -22,6 +22,11 @@ public class AddServiceModification extends Modification{
     }
 
     @Override
+    public void update(ActiveContract contract) {
+
+    }
+
+    @Override
     public void setObjectToChange(Object objectToChange) throws IllegalArgumentException {
         if (!(objectToChange instanceof OptionalService)) {
             throw new IllegalArgumentException("*******Argument must be a OptionalService instance*******\n");

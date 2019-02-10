@@ -10,6 +10,7 @@ public abstract class Modification {
      */
     public abstract boolean validate(ActiveContract activeContract);
 
+    public abstract void update(ActiveContract contract);
 
     public void setObjectToChange(Object objectToChange) throws IllegalArgumentException{
         if (objectToChange == null) throw new IllegalStateException("objectTochange hat to be not null");
