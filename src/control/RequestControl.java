@@ -1,12 +1,12 @@
-package Control;
+package control;
 
 import entity.ActiveContract;
-import Beans.RequestBean;
+import beans.RequestBean;
 
 import DAO.ContractDao;
 import DAO.modificationDAO.ModificationDaoFActory;
 import DAO.modificationDAO.RequestForModificationDao;
-import Beans.ErrorMsg;
+import beans.ErrorMsg;
 import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
 import entity.request.RequestStatus;
@@ -21,16 +21,13 @@ import java.util.List;
  * chiudi richiesta (segna come letto)
  */
 
-public class RequestModel {
+public class RequestControl {
     private String userNickname = "";
     private ActiveContract activeContract = null;
 
-    public RequestModel(String userNickname, int contractId) {
+    public RequestControl(String userNickname, int contractId) {
         setUserNickname(userNickname);
         setActiveContract(contractId);
-    }
-
-    public RequestModel() {
     }
 
     public ActiveContract getContract(){
@@ -130,7 +127,7 @@ public class RequestModel {
         ErrorMsg msg = new ErrorMsg();
         try{
             if (requestBean.getStatus() == RequestStatus.PENDING){
-                //le richieste possono essere fatte solo se sono nello stato CLOSED
+                //le richieste possono essere fatte solo se non sono più PENDING
                 msg.addMsg("Stato della richiesta non corretto: non può essere chiusa\n");
                 return msg;
             }
@@ -149,34 +146,6 @@ public class RequestModel {
         }
         return msg;
 
-    }
-
-    /**
-     * segna come letto
-     * @param requestBean
-     * @return
-     */
-    public ErrorMsg setAsClosed(RequestBean requestBean){
-        ErrorMsg msg = new ErrorMsg();
-        if (requestBean.getStatus() == RequestStatus.PENDING ){
-            msg.addMsg("La richiesta è ancora pending, non può essere chiusa\n");
-            return msg;
-        }
-        try{
-            RequestForModification request = new RequestForModification(requestBean.getRequestId(),
-                    this.activeContract, requestBean.getType(),requestBean.getObjectToChange(), this.userNickname,
-                    requestBean.getReasonWhy(),requestBean.getDate(), requestBean.getStatus());
-
-            RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(requestBean.getType());
-            dao.changeRequestStatus(request, RequestStatus.CLOSED);
-        }catch(SQLException | NullPointerException e){
-            msg.addMsg("Operazione non riuscita: " + e.getMessage());
-
-        } catch (IllegalStateException  | IllegalArgumentException e) {
-            msg.addMsg(e.getMessage());
-        }
-
-        return msg;
     }
 
 }

@@ -1,10 +1,11 @@
-package view.init_page;
+package boundary.init_page;
 
 import java.util.List;
 
+import control.InitControl;
 import entity.ActiveContract;
-import Control.RequestModel;
-import Control.SubmitModel;
+import control.RequestControl;
+import control.EvaluateControl;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,18 +18,19 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import view.evaluateSubmitsView.EvaluateController;
-import view.requestView.RequestController;
+import boundary.evaluate.EvaluateController;
+import boundary.request.RequestController;
+import thread.RefreshTread;
 
 public class InitController  {
-    private InitModel initModel;
+    private InitControl initControl;
 
     public InitController() {
 
     }
 
-    public void setInitModel(InitModel initModel) {
-        this.initModel = initModel;
+    public void setInitControl(InitControl initControl) {
+        this.initControl = initControl;
     }
 
     @FXML
@@ -41,16 +43,16 @@ public class InitController  {
      * riempimento dinamico della GridPane
      */
     private void viewContracts () {
-        if (initModel == null) return;
-        UserName.setText(initModel.getUserNickname());
-        List<ActiveContract> list = initModel.getAllContract();
+        if (initControl == null) return;
+        UserName.setText(initControl.getUserNickname());
+        List<ActiveContract> list = initControl.getAllContract();
         int count = 0;
         for (ActiveContract contract : list) {
             ++count;
             int inVal = contract.getContractId();
             Label l0 = new Label(String.valueOf(contract.getContractId()));
             GridPane.setConstraints(l0, 0, count);
-            Label l1 = new Label(String.valueOf(initModel.getSubmits(contract)));
+            Label l1 = new Label(String.valueOf(initControl.getSubmits(contract)));
             GridPane.setConstraints(l1, 1, count);
             if (Integer.parseInt(l1.getText()) > 0) { // il bottone di risposta è visibile solo se ci sono richieste pendenti
                 Button btn2 = new Button("Rispondi");
@@ -62,30 +64,20 @@ public class InitController  {
             Button btn3 = new Button("Gestisci richieste di modifica");
             btn3.setOnAction(e -> doRequests(inVal));
             GridPane.setConstraints(btn3, 3, count);
-            Button btn4 = new Button("Rinnova");
-            btn4.setOnAction(e -> doRenew(inVal));
-            GridPane.setConstraints(btn4, 4, count);
 
-            gp.getChildren().addAll(l0, l1, btn3, btn4);
+            gp.getChildren().addAll(l0, l1, btn3);
         }
     }
 
-
-   @FXML
-   void doRenew(int contractId) {
-    }
-
-
     @FXML
     void checkForSubmits(int  contractId) {
-        SubmitModel submitModel = new SubmitModel(initModel.getUserNickname(), contractId);
+        EvaluateControl evaluateControl = new EvaluateControl(initControl.getUserNickname(), contractId);
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../evaluateSubmitsView/EvaluateSubmits.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../evaluate/EvaluateSubmits.fxml"));
             BorderPane root1= loader.load();
             EvaluateController controller = loader.getController();
-            controller.setModel(submitModel);
-            //controller.doViewRequests();
-            controller.refrshAvailable(true);
+            controller.setControl(evaluateControl);
+            controller.refrshAvailable();
             Stage stage = new Stage();
             stage.initStyle(StageStyle.DECORATED);
             stage.setTitle("Valutazione Richieste");
@@ -99,12 +91,12 @@ public class InitController  {
 
     @FXML
     void doRequests(int contractId) {
-       RequestModel requestModel = new RequestModel(initModel.getUserNickname(), contractId);
+       RequestControl requestControl = new RequestControl(initControl.getUserNickname(), contractId);
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../requestView/Requests.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../request/Requests.fxml"));
             BorderPane root1= loader.load();
             RequestController controller = loader.getController();
-            controller.setModel(requestModel);
+            controller.setControl(requestControl);
             // thread per aggiornare periodicamente lo stato delle richieste
             controller.refrshAvailable(true);
 

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane prefHeight="561.0" prefWidth="1377.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="boundary.evaluate.EvaluateController">
+   <top>
+      <Label text="Richieste" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="48.0" />
+         </font>
+      </Label>
+   </top>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <GridPane prefHeight="54.0" prefWidth="1377.0" style="-fx-background-color: #333;">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="251.0" minWidth="104.0" prefWidth="203.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="251.0" minWidth="104.0" prefWidth="188.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="393.0" minWidth="195.0" prefWidth="284.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="437.0" minWidth="10.0" prefWidth="335.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="209.0" minWidth="10.0" prefWidth="138.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="194.0" minWidth="10.0" prefWidth="119.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="194.0" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="39.0" minHeight="-Infinity" prefHeight="39.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="30.0" minHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Text fill="#e8e1e1" strokeType="OUTSIDE" strokeWidth="0.0" text="Oggetto della modifica" wrappingWidth="262.0224609375" GridPane.columnIndex="2">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Text>
+                  <Text fill="#f5eded" strokeType="OUTSIDE" strokeWidth="0.0" text="Motivazione richiesta" wrappingWidth="254.5751953125" GridPane.columnIndex="3">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Text>
+                  <Text fill="#f8e9e9" strokeType="OUTSIDE" strokeWidth="0.0" text="Data di  invio " wrappingWidth="139.40234375" GridPane.columnIndex="4">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Text>
+                  <Text fill="#fff8f8" strokeType="OUTSIDE" strokeWidth="0.0" text="Richiesta" GridPane.columnIndex="1">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Text>
+                  <Text fill="#eee5e5" strokeType="OUTSIDE" strokeWidth="0.0" text="Mittente">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Text>
+               </children>
+            </GridPane>
+            <ScrollPane prefHeight="284.0" prefWidth="1377.0">
+               <content>
+                  <GridPane fx:id="requestGp" prefHeight="831.0" prefWidth="1367.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="238.0" minWidth="10.0" prefWidth="198.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="379.0" minWidth="0.0" prefWidth="190.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="648.0" minWidth="10.0" prefWidth="292.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="624.0" minWidth="10.0" prefWidth="336.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="350.0" minWidth="10.0" prefWidth="138.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="293.0" minWidth="10.0" prefWidth="105.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="293.0" minWidth="10.0" prefWidth="105.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                     </rowConstraints>
+                  </GridPane>
+               </content>
+            </ScrollPane>
+            <TextArea fx:id="messageArea" prefHeight="179.0" prefWidth="1377.0" promptText="non ci sono messaggi ">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </TextArea>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

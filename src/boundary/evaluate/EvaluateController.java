@@ -1,8 +1,8 @@
-package view.evaluateSubmitsView;
+package boundary.evaluate;
 
-import Beans.ErrorMsg;
-import Beans.RequestBean;
-import Control.SubmitModel;
+import beans.ErrorMsg;
+import beans.RequestBean;
+import control.EvaluateControl;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,13 +11,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
-import view.init_page.RefreshEvaluateThread;
+import thread.RefreshEvaluateThread;
 
 import java.util.List;
 
-/**
- * todo thread che si occupa di aggiornare la vista
- */
 public class EvaluateController {
     @FXML
     private GridPane requestGp;
@@ -25,10 +22,10 @@ public class EvaluateController {
     @FXML
     private TextArea messageArea;
 
-    private SubmitModel model;
+    private EvaluateControl control;
 
-    public void setModel(SubmitModel model) {
-        this.model = model;
+    public void setControl(EvaluateControl control) {
+        this.control = control;
     }
 
     /**
@@ -37,27 +34,29 @@ public class EvaluateController {
     @FXML
     public void doViewRequests() {
         int count = 0;
-        List<RequestBean> list = model.getSubmits();
+        List<RequestBean> list = control.getSubmits();
         for (RequestBean item : list) {
             ++count;
+            Text sender= new Text(item.getSender()); //mittente della richiesta
+            GridPane.setConstraints(sender, 0, count);
             Text text0 = new Text(item.getType().getDescription()); //tipo della modifica
-            GridPane.setConstraints(text0, 0, count);
+            GridPane.setConstraints(text0, 1, count);
             Text text1 = new Text(item.getObjectToChange().toString()); // objectToChange
-            GridPane.setConstraints(text1, 1, count);
+            GridPane.setConstraints(text1, 2, count);
             Text text2 = new Text(item.getReasonWhy()); //reasonWhy
-            GridPane.setConstraints(text2, 2, count);
+            GridPane.setConstraints(text2, 3, count);
             Text text3 = new Text(item.getDate().toString()); //dateOfSubmission
-            GridPane.setConstraints(text3, 3, count);
+            GridPane.setConstraints(text3, 4, count);
 
             Button acceptBtn = new Button("accetta");
             acceptBtn.setOnAction(e -> accept(item.getRequestId()));
-            GridPane.setConstraints(acceptBtn, 4, count);
+            GridPane.setConstraints(acceptBtn, 5, count);
 
             Button declineBtn = new Button("rifiuta");
             declineBtn.setOnAction(e -> decline(item.getRequestId()));
-            GridPane.setConstraints(declineBtn, 5, count);
+            GridPane.setConstraints(declineBtn, 6, count);
 
-            requestGp.getChildren().addAll(text0, text1, text2, text3, acceptBtn, declineBtn);
+            requestGp.getChildren().addAll(sender, text0, text1, text2, text3, acceptBtn, declineBtn);
         }
     }
 
@@ -67,9 +66,9 @@ public class EvaluateController {
         ErrorMsg msg = new ErrorMsg();
         RequestBean request = new RequestBean();
         request.setRequestId(requestId);
-        for (RequestBean item : model.getSubmits()){
+        for (RequestBean item : control.getSubmits()){
             if (item.equals(request))
-                msg.addAllMsg(model.decline(item));
+                msg.addAllMsg(control.decline(item));
         }
         if (msg.isErr())
             for (String item : msg.getMsgList()){
@@ -88,9 +87,9 @@ public class EvaluateController {
         ErrorMsg msg = new ErrorMsg();
         RequestBean request = new RequestBean();
         request.setRequestId(requestId);
-        for (RequestBean item : model.getSubmits()){
+        for (RequestBean item : control.getSubmits()){
             if (item.equals(request))
-                msg.addAllMsg(model.accept(item));
+                msg.addAllMsg(control.accept(item));
         }
         if (msg.isErr())
             for (String item : msg.getMsgList()){
@@ -102,13 +101,10 @@ public class EvaluateController {
     }
 
 
-    public void refrshAvailable(boolean b){
-        if (b) {
-            RefreshEvaluateThread thread = new RefreshEvaluateThread(this);
-            thread.setDaemon(false);
-            thread.start();
-        }
-
+    public void refrshAvailable(){
+        RefreshEvaluateThread thread = new RefreshEvaluateThread(this);
+        thread.setDaemon(false);
+        thread.start();
     }
 
     private void clearGridPane(GridPane gp){

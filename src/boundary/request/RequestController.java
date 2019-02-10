@@ -1,4 +1,4 @@
-package view.requestView;
+package boundary.request;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import entity.ActiveContract;
-import Beans.ErrorMsg;
-import Beans.RequestBean;
-import Control.RequestModel;
-import Beans.OptionalServiceBean;
+import beans.ErrorMsg;
+import beans.RequestBean;
+import control.RequestControl;
+import beans.OptionalServiceBean;
 import entity.OptionalService;
 import entity.TypeOfPayment;
 import entity.modification.TypeOfModification;
@@ -22,17 +22,17 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
-import view.init_page.RefreshRequestThread;
+import thread.RefreshRequestThread;
 
 
 public class RequestController {
 
-    private RequestModel model;
+    private RequestControl control;
     private RequestBean requestBean;
 
 
-    public void setModel(RequestModel model) {
-        this.model = model;
+    public void setControl(RequestControl control) {
+        this.control = control;
     }
 
 
@@ -106,7 +106,7 @@ public class RequestController {
     @FXML
     void doSend(ActionEvent event) {
         requestBean.setReasonWhy(reasonWhyArea.getText());
-        ErrorMsg msg = model.insertRequest(requestBean);
+        ErrorMsg msg = control.insertRequest(requestBean);
         messageArea.clear();
         if (msg.isErr())
             for (String item : msg.getMsgList()){
@@ -133,7 +133,7 @@ public class RequestController {
            service = new OptionalServiceBean(serviceNameField.getText(), price, serviceDescriptionField.getText());
         }
         if (service.isValid()) {
-            requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.ADD_SERVICE,
+            requestBean = new RequestBean(control.getUserNickname(), TypeOfModification.ADD_SERVICE,
                     service, LocalDate.now());
             if(!requestBean.isValid()){
                 for (String item : requestBean.getMsg().getMsgList())
@@ -158,7 +158,7 @@ public class RequestController {
     void doChangeDate(ActionEvent event) {
         messageArea.clear();
         LocalDate date = TerminationDateField.getValue();
-        requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_TERMINATIONDATE,
+        requestBean = new RequestBean(control.getUserNickname(), TypeOfModification.CHANGE_TERMINATIONDATE,
                 date, LocalDate.now());
         if(!requestBean.isValid()){
             for (String item : requestBean.getMsg().getMsgList())
@@ -174,7 +174,7 @@ public class RequestController {
     void doChangePayment(ActionEvent event) {
         messageArea.clear();
         TypeOfPayment type = TypeOfPayment.getType(paymentComboBox.getValue());
-        requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.CHANGE_PAYMENTMETHOD,
+        requestBean = new RequestBean(control.getUserNickname(), TypeOfModification.CHANGE_PAYMENTMETHOD,
                 type, LocalDate.now());
         if(!requestBean.isValid()){
             for (String item : requestBean.getMsg().getMsgList())
@@ -192,7 +192,7 @@ public class RequestController {
     @FXML
     public void doViewRequests() {
         int count = 0;
-        List<RequestBean> list = model.getAllRequests();
+        List<RequestBean> list = control.getAllRequests();
         for (RequestBean item : list){
             ++count;
             Text text0 = new Text(item.getType().getDescription()); //description
@@ -205,7 +205,7 @@ public class RequestController {
             GridPane.setConstraints(text3, 3, count);
             Text text4 =new Text(item.getStatus().getDescription()) ; //status
             GridPane.setConstraints(text4, 4, count);
-            if (item.getStatus() != RequestStatus.PENDING && item.getStatus() != RequestStatus.CLOSED) {
+            if (item.getStatus() != RequestStatus.PENDING ) {
                 Button btn = new Button("segna come letto");
                 btn.setOnAction(e -> closeRequest(item.getRequestId()));
                 GridPane.setConstraints(btn, 5, count);
@@ -221,9 +221,9 @@ public class RequestController {
         ErrorMsg msg = new ErrorMsg();
         RequestBean request = new RequestBean();
         request.setRequestId(idRequest);
-        for (RequestBean item : model.getAllRequests()){
+        for (RequestBean item : control.getAllRequests()){
             if (item.equals(request))
-                msg.addAllMsg(model.deleteRequest(item));
+                msg.addAllMsg(control.deleteRequest(item));
         }
         if (msg.isErr())
             for (String item : msg.getMsgList()){
@@ -239,13 +239,13 @@ public class RequestController {
         messageArea.clear();
         OptionalService service = null;
         //takes elements from the gridPane by using the input row field
-        for (OptionalService item : model.getContract().getServiceList())
+        for (OptionalService item : control.getContract().getServiceList())
             if (item.getServiceId() == serviceId){ //mi basta sapere l'id per ricavare tutti i campi del servizio in questione
                 service = item;
                 break;
             }
 
-        requestBean = new RequestBean(model.getUserNickname(), TypeOfModification.REMOVE_SERVICE,
+        requestBean = new RequestBean(control.getUserNickname(), TypeOfModification.REMOVE_SERVICE,
                 service, LocalDate.now());
         if(!requestBean.isValid()){
             for (String item : requestBean.getMsg().getMsgList())
@@ -263,7 +263,7 @@ public class RequestController {
     @FXML
     public void displayContractField(){
         int count = 0;
-        ActiveContract contract = model.getContract();
+        ActiveContract contract = control.getContract();
         idContractField.setText(String.valueOf(contract.getContractId()));
         tenantField.setText(contract.getTenantNickname());
         renterField.setText(contract.getRenterNickname());
@@ -302,7 +302,7 @@ public class RequestController {
      * aggiorna lo stato dei servizi e dele richieste
      */
     public void flushInfo() {
-        model.setActiveContract(model.getContract().getContractId());
+        control.setActiveContract(control.getContract().getContractId());
         Platform.runLater(()-> {
             clearGridPane(requestGp);
             clearGridPane(gp);

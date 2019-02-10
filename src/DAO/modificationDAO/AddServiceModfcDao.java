@@ -1,9 +1,8 @@
 package DAO.modificationDAO;
 
 import entity.ActiveContract;
-import Beans.RequestBean;
+import beans.RequestBean;
 import DAO.C3poDataSource;
-import Beans.OptionalServiceBean;
 import entity.OptionalService;
 import entity.modification.AddServiceModification;
 import entity.modification.Modification;

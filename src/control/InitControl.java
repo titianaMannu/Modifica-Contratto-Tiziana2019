@@ -1,8 +1,8 @@
-package view.init_page;
+package control;
 
 import entity.ActiveContract;
-import Beans.ErrorMsg;
-import Beans.RequestBean;
+import beans.ErrorMsg;
+import beans.RequestBean;
 import DAO.ContractDao;
 import DAO.modificationDAO.ModificationDaoFActory;
 import DAO.modificationDAO.RequestForModificationDao;
@@ -12,10 +12,10 @@ import entity.modification.TypeOfModification;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InitModel {
+public class InitControl {
     private String userNickname = "";
 
-    public InitModel() {
+    public InitControl() {
     }
 
     public ErrorMsg setUserNickname(String userNickname) {

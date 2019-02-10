@@ -1,6 +1,5 @@
 package entity.modification;
 import entity.ActiveContract;
-import Beans.OptionalServiceBean;
 import entity.OptionalService;
 
 import java.util.List;

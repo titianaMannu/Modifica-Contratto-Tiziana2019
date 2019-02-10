@@ -1,4 +1,4 @@
-package Beans;
+package beans;
 
 import entity.modification.TypeOfModification;
 import entity.request.RequestStatus;

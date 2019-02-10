@@ -1,5 +1,6 @@
-package view.init_page;
+package boundary.init_page;
 
+import control.InitControl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,14 +11,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        String userNickName = "pluto"; // i realtà deve essere passato da un altro controller che fa le veci del main
+        String userNickName = "pippo"; // i realtà deve essere passato da un altro controller che fa le veci del main
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("init_view.fxml"));
         BorderPane root = loader.load();
         InitController controller = loader.getController();
-        InitModel model = new InitModel();
+        InitControl model = new InitControl();
         model.setUserNickname(userNickName);
-        controller.setInitModel(model);
+        controller.setInitControl(model);
         controller.refrshAvailable(true);
         primaryStage.setTitle("Gestione Contratti");
         primaryStage.setScene(new Scene(root));

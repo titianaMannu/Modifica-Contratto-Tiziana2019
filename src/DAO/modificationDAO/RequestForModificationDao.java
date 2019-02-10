@@ -1,7 +1,7 @@
 package DAO.modificationDAO;
 
 import entity.ActiveContract;
-import Beans.RequestBean;
+import beans.RequestBean;
 import DAO.C3poDataSource;
 import entity.modification.Modification;
 import entity.request.RequestForModification;

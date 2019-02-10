@@ -1,7 +1,11 @@
-package view.init_page;
+package thread;
 
-import view.evaluateSubmitsView.EvaluateController;
+import boundary.evaluate.EvaluateController;
 
+/**
+ * soluzione di tipo polling : la gui periodicamente aggiorna i propri dati
+ * si è preferito questo tipo di soluzione in quanto il carico di tati da aggiornare non è eccessivo
+ */
 public class RefreshEvaluateThread   extends  Thread{
     private EvaluateController evaluateController;
 
@@ -11,7 +15,7 @@ public class RefreshEvaluateThread   extends  Thread{
 
     @Override
     public void run() {
-        long timeout = 3000;
+        long timeout = 6000;
         while (true){
             try {
                 evaluateController.flushInfo();

@@ -1,6 +1,6 @@
 package entity.modification;
 
-import Beans.OptionalServiceBean;
+import beans.OptionalServiceBean;
 import entity.OptionalService;
 
 public class ModificationFactory {
