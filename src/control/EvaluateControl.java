@@ -19,7 +19,6 @@ import java.util.List;
  * ottieni proposte
  * accetta proposta
  * respingi proposta
- * subroutine che si occupa di settare le richieste expired (dovrebbe essere un caso d'uso a parte)
  */
 
 public class EvaluateControl {
@@ -29,9 +28,6 @@ public class EvaluateControl {
     public EvaluateControl(String userNickname, int contractId) {
         setUserNickname(userNickname);
         setActiveContract(contractId);
-    }
-
-    public EvaluateControl() {
     }
 
     public ActiveContract getContract(int contractId){
@@ -86,10 +82,13 @@ public class EvaluateControl {
                     activeContract, requestBean.getType(),requestBean.getObjectToChange(), userNickname,
                     requestBean.getReasonWhy(),requestBean.getDate(), requestBean.getStatus());
 
+            System.out.println(this.activeContract.toString());
+            request.accept();
+            System.out.println(this.activeContract.toString());
             RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(requestBean.getType());
             dao.updateContract(request);
-            //la richiesta viene marcata come accettata
-            dao.changeRequestStatus(request, RequestStatus.ACCEPTED);
+            //aggiorno lo stato della richiesta
+            dao.setRequestStatus(request);
         }catch(SQLException | NullPointerException e){
             msg.addMsg("Operazione non riuscita: " + e.getMessage());
 
@@ -112,8 +111,10 @@ public class EvaluateControl {
                     activeContract, requestBean.getType(),requestBean.getObjectToChange(), userNickname,
                     requestBean.getReasonWhy(),requestBean.getDate(), requestBean.getStatus());
 
+            request.decline();
             RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(requestBean.getType());
-            dao.changeRequestStatus(request, RequestStatus.DECLINED);
+            //aggiorno lo stato della richiesta
+            dao.setRequestStatus(request);
 
         }catch(SQLException | NullPointerException e){
             msg.addMsg("Operazione non riuscita: " + e.getMessage());

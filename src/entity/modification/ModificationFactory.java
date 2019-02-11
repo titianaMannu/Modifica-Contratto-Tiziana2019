@@ -18,11 +18,7 @@ public class ModificationFactory {
         // default constructor must be private because of we are using singleton pattern
     }
 
-    /**
-     * @param objectToChange Object
-     * @param inType TypeOfModification
-     * @return Modification
-     */
+
     public Modification createProduct(Object objectToChange, TypeOfModification inType){
         try {
             switch (inType) {
@@ -38,7 +34,7 @@ public class ModificationFactory {
                     return null;
             }
 
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | NullPointerException e){
             e.printStackTrace();
             return  null;
         }
@@ -46,7 +42,7 @@ public class ModificationFactory {
     }
 
     /**
-     * viene fatta la creazione della entity service e passata alla modifica.
+     * Se ho in input un bean viene fatta la creazione della entity service e passata alla modifica.
      */
     private Modification createAddServiceModfc(Object objectToChange) throws IllegalArgumentException{
         if (objectToChange instanceof OptionalService)

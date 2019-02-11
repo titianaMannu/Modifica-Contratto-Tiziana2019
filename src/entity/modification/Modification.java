@@ -6,14 +6,18 @@ public abstract class Modification {
 
     /**
      * @param activeContract : ActiveContract
-     * @return true if the Modification is compatible with the activeContract; else return false
+     * @return true se la modifica è compatibile con activeContract
      */
     public abstract boolean validate(ActiveContract activeContract);
 
+    /**
+     * applica l'oggetto della modifica al contratto
+     * @param contract : ActiveContract
+     */
     public abstract void update(ActiveContract contract);
 
-    public void setObjectToChange(Object objectToChange) throws IllegalArgumentException{
-        if (objectToChange == null) throw new IllegalStateException("objectTochange hat to be not null");
+    public void setObjectToChange(Object objectToChange) throws NullPointerException{
+        if (objectToChange == null) throw new NullPointerException("objectTochange hat to be not null");
         this.objectToChange = objectToChange;
     }
 

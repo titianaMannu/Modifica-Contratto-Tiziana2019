@@ -123,7 +123,7 @@ public abstract class RequestForModificationDao {
     }
 
 
-    public void changeRequestStatus(RequestForModification request, RequestStatus newStatus)
+    public void setRequestStatus(RequestForModification request)
             throws  NullPointerException, SQLException, IllegalStateException {
 
         if (request == null ) throw new NullPointerException("Specificare una richiesta\n");
@@ -131,10 +131,10 @@ public abstract class RequestForModificationDao {
         String sql = "update requestForModification set status = ?\n" +
                 "where idRequest = ?";
         try(Connection conn = C3poDataSource.getConnection();PreparedStatement st = conn.prepareStatement(sql)){
-            st.setInt(1, newStatus.getValue());
+            st.setInt(1, request.getStatus().getValue());
             st.setInt(2, request.getRequestId());
             if (st.executeUpdate() != 1) throw new IllegalStateException("Non è stato possibile rendere la richiesta " +
-                    newStatus.getDescription() + "\n");
+                    request.getStatus().getDescription() + "\n");
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;

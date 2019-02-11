@@ -6,7 +6,7 @@ import java.util.List;
 
 public class AddServiceModification extends Modification{
 
-    public AddServiceModification(Object objectToChange) throws IllegalArgumentException{
+    public AddServiceModification(Object objectToChange) throws NullPointerException, IllegalArgumentException{
         setObjectToChange(objectToChange);
     }
 
@@ -23,15 +23,17 @@ public class AddServiceModification extends Modification{
 
     @Override
     public void update(ActiveContract contract) {
-
+        List<OptionalService> list = contract.getServiceList();
+        list.add(getObjectToChange()); //aggiunta del servizio
+        contract.setPriceInfo(contract.getNetPrice()); // ricalcolo del prezzo lordo
     }
 
     @Override
-    public void setObjectToChange(Object objectToChange) throws IllegalArgumentException {
+    public void setObjectToChange(Object objectToChange) throws NullPointerException, IllegalArgumentException {
+        super.setObjectToChange(objectToChange);
         if (!(objectToChange instanceof OptionalService)) {
             throw new IllegalArgumentException("*******Argument must be a OptionalService instance*******\n");
         }
-        super.setObjectToChange(objectToChange);
     }
 
     @Override

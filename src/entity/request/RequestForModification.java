@@ -14,7 +14,7 @@ public class RequestForModification {
     private String reasonWhy;
     private LocalDate dateOfSubmission;
     private RequestStatus status;
-    private int requestId =  -1;
+    private int requestId ;
     /** Aggrega il contratto: non ha senso che esista una rischiesta di modifica senza il contratto*/
     private ActiveContract activeContract;
     private TypeOfModification type;
@@ -41,6 +41,7 @@ public class RequestForModification {
     public RequestForModification(ActiveContract c, TypeOfModification type, Object obj, String sender, String reasonWhy,
                                   LocalDate date, RequestStatus status) throws  IllegalArgumentException{
 
+        this.requestId = -1;
         setModification(obj, type);
         if (c == null)
             throw new IllegalArgumentException("Contratto inserito non corretto\n");
@@ -59,12 +60,29 @@ public class RequestForModification {
         return modification.validate(activeContract);
     }
 
+    /**
+     * accetta la richiesta e applica la modifica al contratto
+     */
+    public void accept(){
+        setStatus(RequestStatus.ACCEPTED);
+        this.modification.update(this.activeContract);
+    }
+
+    public void decline(){
+        setStatus(RequestStatus.DECLINED);
+    }
+
+    public void expire(){
+        setStatus(RequestStatus.EXPIRED);
+    }
+
+
     public void setRequestId(int requestId)throws IllegalArgumentException {
         if (requestId < 1) throw new IllegalArgumentException("Specificare una richiesta esistente\n");
         this.requestId = requestId;
     }
 
-    public void setModification(Object obj, TypeOfModification type) throws IllegalArgumentException{
+    private void setModification(Object obj, TypeOfModification type) throws IllegalArgumentException{
         Modification modification = ModificationFactory.getInstance().createProduct(obj, type);
         if (modification == null){
             throw new IllegalArgumentException("Parametri della modifica non corretti\n");
@@ -73,7 +91,7 @@ public class RequestForModification {
         this.modification = modification;
     }
 
-    public void setSenderReceiver(String sender, ActiveContract c) throws IllegalArgumentException{
+    private void setSenderReceiver(String sender, ActiveContract c) throws IllegalArgumentException{
         // controllo sui dati
         if (sender == null || c == null || sender.isEmpty())
             throw  new IllegalArgumentException("Mittente non corretto\n");
@@ -100,11 +118,7 @@ public class RequestForModification {
     }
 
 
-    /**
-     * se reasonwhy è null o non specificato allora viene inserito un messaggio di default
-     * @param reasonWhy
-     */
-    public void setReasonWhy(String reasonWhy){
+    private void setReasonWhy(String reasonWhy){
         if (reasonWhy != null && !reasonWhy.isEmpty())
             this.reasonWhy = reasonWhy;
         else
@@ -112,8 +126,7 @@ public class RequestForModification {
     }
 
 
-
-    public void setStatus(RequestStatus status) throws  IllegalArgumentException{
+    private void setStatus(RequestStatus status) throws  IllegalArgumentException{
         if (status == null) throw new  IllegalArgumentException("Stato della modifica non corretto\n");
         this.status = status;
     }

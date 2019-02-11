@@ -118,11 +118,7 @@ public class RequestControl {
         return list;
     }
 
-    /**
-     * eliminazione
-     * @param requestBean
-     * @return
-     */
+
     public ErrorMsg deleteRequest(RequestBean requestBean){
         ErrorMsg msg = new ErrorMsg();
         try{
