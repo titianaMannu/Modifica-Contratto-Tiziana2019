@@ -153,11 +153,12 @@ public class AddServiceModfcDao extends RequestForModificationDao {
         String sql = "select name as serviceName, price as servicePrice\n" +
                 "from AddServiceModification as m join requestForModification as rm on m.requestId = rm.idRequest " +
                 "&& m.requestC = ?\njoin OptionalService OS on m.service = OS.idService\n" +
-                "where rm.status = 0" ;
+                "where rm.status = ?" ;
         try (Connection  conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
             if (!conn.getAutoCommit())
                 conn.setAutoCommit(true);
             st.setInt(1, request.getActiveContract().getContractId());
+            st.setInt(2, RequestStatus.PENDING.getValue());
             ResultSet res = st.executeQuery();
             while(res.next())
                 if (service.getServiceName().equals(res.getString("serviceName"))

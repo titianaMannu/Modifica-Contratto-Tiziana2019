@@ -163,8 +163,9 @@ public abstract class RequestForModificationDao {
                     if (modification != null) {
                         try { //costruisco lista di richieste
                             RequestForModification request = new RequestForModification(res.getInt("idRequest"), contract,
-                                    TypeOfModification.valueOf(res.getInt("type")), modification.getObjectToChange(), res.getString("reasonWhy"),
-                                    res.getString("senderNickname"), res.getDate("dateOfSubmission").toLocalDate(), RequestStatus.valueOf(res.getInt("status")));
+                                    TypeOfModification.valueOf(res.getInt("type")), modification.getObjectToChange(),
+                                    res.getString("senderNickname"), res.getString("reasonWhy"),
+                                    res.getDate("dateOfSubmission").toLocalDate(), RequestStatus.valueOf(res.getInt("status")));
                             list.add(request);
                         }catch (IllegalArgumentException | NullPointerException e){
                             e.printStackTrace();
