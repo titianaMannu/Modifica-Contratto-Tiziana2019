@@ -1,8 +1,8 @@
-package Control;
+package control;
 
-import Beans.ErrorMsg;
-import Beans.RequestBean;
-import Beans.OptionalService;
+import beans.ErrorMsg;
+import beans.RequestBean;
+import beans.OptionalServiceBean;
 import entity.modification.TypeOfModification;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,21 +16,21 @@ import static org.junit.Assert.*;
  * l'intento non è quello di coprire tutti i casi possibili ma solo quelli con valenza applicativa
  */
 
-public class InsertRequestModel {
+public class InsertRequestControl {
 
-    private static RequestModel requestModel;
+    private static RequestControl requestControl;
     private RequestBean request;
 
     @BeforeClass
     public static void setUp() throws Exception {
-      requestModel = new RequestModel("pippo", 1);
+      requestControl = new RequestControl("pippo", 1);
     }
 
     @Test
     public void insertRequest() {
         request= new RequestBean("pippo" , TypeOfModification.ADD_SERVICE,
-                new OptionalService("pulizia", 30, ""), LocalDate.now());
-        ErrorMsg err = requestModel.insertRequest(request);
+                new OptionalServiceBean("pulizia", 30, ""), LocalDate.now());
+        ErrorMsg err = requestControl.insertRequest(request);
         assertFalse(err.isErr());
     }
 

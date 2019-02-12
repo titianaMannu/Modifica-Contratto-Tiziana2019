@@ -1,4 +1,4 @@
-package Control;
+package control;
 
 import DAO.C3poDataSource;
 import org.junit.Test;
@@ -27,8 +27,8 @@ public class beforeTest {
     @Test
     public void insert() throws SQLException{
         int res1  = -1, res2 = -1;
-        String sql1 = "insert into ActiveContract(idContract, tenantNickname, renterNickname, tenantCF, renterCF, grossPrice, netPrice)\n" +
-                "values (1, 'pippo', 'pluto', 'xxx', 'yyy', 32, 2)";
+        String sql1 = "insert into ActiveContract(idContract, tenantNickname, renterNickname, tenantCF, renterCF, grossPrice, netPrice, terminationDate)\n" +
+                "values (1, 'pippo', 'pluto', 'xxx', 'yyy', 32, 2,'2021-01-03')";
         String sql2 = "insert into OptionalService(activecontract_idcontract, name, price)" +
                 " value(1, 'wifi', 30)";
         try(Connection conn = C3poDataSource.getConnection(); Statement st = conn.createStatement()){

@@ -1,6 +1,6 @@
 package DAO.modificationDAO.paymentMethod;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import DAO.ContractDao;
 import DAO.modificationDAO.ModificationDaoFActory;
 import DAO.modificationDAO.RequestForModificationDao;

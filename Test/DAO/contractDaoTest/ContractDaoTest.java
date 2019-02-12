@@ -1,6 +1,6 @@
 package DAO.contractDaoTest;
 
-import Beans.ActiveContract;
+import entity.ActiveContract;
 import DAO.ContractDao;
 import org.junit.Test;
 

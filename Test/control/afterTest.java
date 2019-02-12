@@ -1,4 +1,4 @@
-package Control;
+package control;
 
 import DAO.C3poDataSource;
 import org.junit.Test;

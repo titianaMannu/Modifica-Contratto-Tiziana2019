@@ -9,7 +9,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@Suite.SuiteClasses(value = {beforeTest.class, AddServiceTest.class, afterTest.class})
+@Suite.SuiteClasses(value = {beforeTest.class, AddOptionalServiceTest.class, afterTest.class})
 public class finalTest {
 
 }

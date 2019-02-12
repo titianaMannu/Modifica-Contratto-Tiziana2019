@@ -27,8 +27,8 @@ public class beforeTest {
     @Test
     public void insert() throws SQLException{
         int res1  = -1;
-        String sql1 = "insert into ActiveContract(idContract, tenantNickname, renterNickname, tenantCF, renterCF, grossPrice, netPrice)\n" +
-                "values (1, 'pippo', 'pluto', 'xxx', 'yyy', 2, 1)";
+        String sql1 = "insert into ActiveContract(idContract, tenantNickname, renterNickname, tenantCF, renterCF, grossPrice, netPrice, terminationDate)\n" +
+                "values (1, 'pippo', 'pluto', 'xxx', 'yyy', 2, 1, '2021-01-03')";
         try(Connection conn = C3poDataSource.getConnection(); Statement st = conn.createStatement()){
             clear_table();
             res1 = st.executeUpdate(sql1);

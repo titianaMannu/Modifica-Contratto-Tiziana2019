@@ -1,7 +1,7 @@
-package Control;
+package control;
 
-import Beans.ErrorMsg;
-import Beans.RequestBean;
+import beans.ErrorMsg;
+import beans.RequestBean;
 import entity.request.RequestStatus;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,27 +12,27 @@ import static org.junit.Assert.assertTrue;
 
 public class DeleteRequestCtrl {
 
-    private static RequestModel requestModel ;
+    private static RequestControl requestControl;
     private static List<RequestBean> list ;
 
     @BeforeClass
     public  static void setUp(){
-        requestModel = new RequestModel("pippo", 1);
-        list = requestModel.getAllRequests();
+        requestControl = new RequestControl("pippo", 1);
+        list = requestControl.getAllRequests();
     }
 
     @Test
     public void deleteRequest(){
         ErrorMsg err;
         for (RequestBean item : list ){
-            err = requestModel.setAsClosed(item);
-            if (item.getStatus() == RequestStatus.PENDING  || item.getStatus() == RequestStatus.CLOSED)
+            err = requestControl.deleteRequest(item);
+            if (item.getStatus() == RequestStatus.PENDING )
                 assertTrue(err.isErr());
             else {
-                list = requestModel.getAllRequests();
+                list = requestControl.getAllRequests();
 
                 assertFalse(err.isErr());
-                err = requestModel.deleteRequest(list.get(list.indexOf(item)));
+                err = requestControl.deleteRequest(list.get(list.indexOf(item)));
                 if (err.isErr()) System.out.println(err.getMsgList().get(0));
                 assertFalse(err.isErr());
             }
