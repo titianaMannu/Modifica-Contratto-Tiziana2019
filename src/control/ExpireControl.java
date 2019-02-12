@@ -15,20 +15,26 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 
-/**
- * todo 2 thread (lettore, scrittore) che si azionano una volta ogni timeout
- */
 
 public class ExpireControl {
     private Lock lock;
     private List<RequestForModification> list;
 
-    public ExpireControl() {
+    private ExpireControl() {
         this.list = new ArrayList<>();
         this.lock = new ReentrantLock();
     }
 
-    public void getList(){
+    private static class LazyContainer{
+        private final static ExpireControl control = new ExpireControl();
+    }
+
+    public static ExpireControl getInstance(){
+        return LazyContainer.control;
+    }
+
+    public boolean buildList(){
+        boolean res = false;
         try{
             if (this.lock.tryLock(6, TimeUnit.SECONDS)){
                     this.list.clear();
@@ -37,19 +43,22 @@ public class ExpireControl {
                         this.list.addAll(dao.getRequestsToExpire());
                     }
             }
+            res = true;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
             this.lock.unlock();
+            return res;
         }
     }
 
 
-    public void analyze(){
+    public boolean analyze(){
+        boolean res = false;
         try {
             if (this.lock.tryLock(7, TimeUnit.SECONDS)) {
-                for (RequestForModification item : this.list)
-                    if (item.getDateOfSubmission().plusDays(5).compareTo(LocalDate.now()) > 0) {
+                for (RequestForModification item : this.list ){
+                    if (item.getDateOfSubmission().plusDays(5).isAfter(LocalDate.now())) {
                         // se la richiesta è stata fatta 5 giorni fa ...
                         RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(item.getType());
                         try {
@@ -60,14 +69,17 @@ public class ExpireControl {
                             //not critical error
                         }
                     }
-                //pone le richieste non obsolete nuovamente PENDING
-                rollback();
+                }
+                res = true;
             }
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
+            //pone le richieste non obsolete nuovamente PENDING
+            rollback();
             this.lock.unlock();
+            return  res;
         }
     }
 
