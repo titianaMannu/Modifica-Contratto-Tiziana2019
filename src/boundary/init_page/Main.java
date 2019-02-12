@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import thread.Reader;
+import thread.Writer;
 
 public class Main extends Application {
 
@@ -23,6 +25,14 @@ public class Main extends Application {
         primaryStage.setTitle("Gestione Contratti");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+
+        Thread t1 = new Thread(Writer.getInstance());
+        Thread t2 = new Thread(Reader.getInstance());
+        t1.setDaemon(false);
+        t2.setDaemon(false);
+        t2.start();
+        t1.start();
+
     }
 
 
