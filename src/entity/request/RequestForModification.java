@@ -68,14 +68,23 @@ public class RequestForModification {
         this.modification.update(this.activeContract);
     }
 
+    /**
+     * declina la richiesta di modifica
+     */
     public void decline(){
         setStatus(RequestStatus.DECLINED);
     }
 
-    public void expire(){
-        setStatus(RequestStatus.EXPIRED);
+    /**
+     * rende la richiesta obsoleta se b è true altrimenti torna PENDING
+     * @param b : boolean
+     */
+    public void expire(boolean b){
+        if (b)
+            setStatus(RequestStatus.EXPIRED);
+        else
+            setStatus(RequestStatus.PENDING);
     }
-
 
     public void setRequestId(int requestId)throws IllegalArgumentException {
         if (requestId < 1) throw new IllegalArgumentException("Specificare una richiesta esistente\n");
