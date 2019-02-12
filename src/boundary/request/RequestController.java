@@ -205,7 +205,7 @@ public class RequestController {
             GridPane.setConstraints(text3, 3, count);
             Text text4 =new Text(item.getStatus().getDescription()) ; //status
             GridPane.setConstraints(text4, 4, count);
-            if (item.getStatus() != RequestStatus.PENDING ) {
+            if (item.getStatus() != RequestStatus.PENDING && item.getStatus() != RequestStatus.TO_EXPIRE) {
                 Button btn = new Button("segna come letto");
                 btn.setOnAction(e -> closeRequest(item.getRequestId()));
                 GridPane.setConstraints(btn, 5, count);
