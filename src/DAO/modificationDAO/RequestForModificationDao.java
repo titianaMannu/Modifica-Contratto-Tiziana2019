@@ -1,13 +1,16 @@
 package DAO.modificationDAO;
 
+import DAO.ContractDao;
 import entity.ActiveContract;
 import beans.RequestBean;
 import DAO.C3poDataSource;
 import entity.modification.Modification;
+import entity.modification.TypeOfModification;
 import entity.request.RequestForModification;
 import entity.request.RequestStatus;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class RequestForModificationDao {
@@ -15,7 +18,6 @@ public abstract class RequestForModificationDao {
     /**
      * Applica la modifica contenuta nella richiesta al contratto
      * @param request : richiesta di modifica
-     * todo test per ogni tipo
      */
     public abstract void updateContract(RequestForModification request)
             throws IllegalStateException, IllegalArgumentException, NullPointerException, SQLException;
@@ -27,8 +29,6 @@ public abstract class RequestForModificationDao {
 
     /**
      * controlla che non ci siano altre richieste di modifica uguali (PENDING) per il contratto
-     *todo test per ogni tipologia
-     * @param request
      */
     public abstract boolean validateRequest(RequestForModification request)
             throws IllegalArgumentException, NullPointerException, SQLException;
@@ -37,7 +37,6 @@ public abstract class RequestForModificationDao {
 
     /**
      * Si occupa dell'eliminazione della richiesta (politica di eliminazione a cascata per la modifica corrispondente)
-     * todo test
     */
     public  void deleteRequest(RequestForModification request)
             throws IllegalStateException, NullPointerException, SQLException {
@@ -80,7 +79,6 @@ public abstract class RequestForModificationDao {
 
     /**
      * Si occupa dell'inserimento della richiesta e della modifica corrispondente
-     * todo test
      */
     public void insertRequest(RequestForModification request)
             throws IllegalArgumentException, NullPointerException, SQLException, IllegalStateException {
@@ -122,8 +120,7 @@ public abstract class RequestForModificationDao {
         }
     }
 
-
-    public void setRequestStatus(RequestForModification request)
+    public synchronized void setRequestStatus(RequestForModification request)
             throws  NullPointerException, SQLException, IllegalStateException {
 
         if (request == null ) throw new NullPointerException("Specificare una richiesta\n");
@@ -139,8 +136,47 @@ public abstract class RequestForModificationDao {
             e.printStackTrace();
             throw e;
         }
-
     }
+
+    /**
+     * return una lista di richieste TO_EXIPIRE
+     */
+    public List<RequestForModification> getRequestsToExpire() {
+            List<RequestForModification> list = new ArrayList<>();
+            String before = "update requestForModification set status = ?\n" +
+                    "where status = ?";
+            String sql = "select  *\n" +
+                    "from requestForModification\n" +
+                    "where status = ?";
+            try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql);
+          PreparedStatement  beforeSt = conn.prepareStatement(before)) {
+                beforeSt.setInt(1, RequestStatus.TO_EXPIRE.getValue());
+                beforeSt.setInt(2, RequestStatus.PENDING.getValue());
+                beforeSt.executeUpdate(); // tutte le richieste PENDING diventano TO_EXPIRE (motivi di sicurezza)
+
+                st.setInt(1, RequestStatus.TO_EXPIRE.getValue());
+                ResultSet res = st.executeQuery();
+                while (res.next()) {
+                    ActiveContract contract = ContractDao.getInstance().getContract(res.getInt("contract"));
+                    if (contract == null) continue;
+                    Modification modification = getModification(contract.getContractId(), res.getInt("idRequest"));
+                    if (modification != null) {
+                        try { //costruisco lista di richieste
+                            RequestForModification request = new RequestForModification(res.getInt("idRequest"), contract,
+                                    TypeOfModification.valueOf(res.getInt("type")), modification.getObjectToChange(), res.getString("reasonWhy"),
+                                    res.getString("senderNickname"), res.getDate("dateOfSubmission").toLocalDate(), RequestStatus.valueOf(res.getInt("status")));
+                            list.add(request);
+                        }catch (IllegalArgumentException | NullPointerException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } catch (SQLException  e) {
+                e.printStackTrace();
+            }
+
+            return list; //in caso di errori ritorna una lista parziale o vuota
+        }
 
 
 
