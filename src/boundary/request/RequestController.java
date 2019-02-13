@@ -190,7 +190,7 @@ public class RequestController {
      * mostra lo stato di tutte le richieste fatte dall'utente
      */
     @FXML
-    public void doViewRequests() {
+    public void showRequests() {
         int count = 0;
         List<RequestBean> list = control.getAllRequests();
         for (RequestBean item : list){
@@ -307,7 +307,7 @@ public class RequestController {
             clearGridPane(requestGp);
             clearGridPane(gp);
             displayContractField();
-            doViewRequests();
+            showRequests();
         });
     }
 

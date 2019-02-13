@@ -23,7 +23,7 @@ public class Writer implements Runnable {
     @Override
     public void run() {
         while (true)
-            if (control.analyze() ){
+            if (control.analyzeRequestToExpire() ){
                 try {
                     Thread.sleep(timeout);
                 } catch (InterruptedException e) {

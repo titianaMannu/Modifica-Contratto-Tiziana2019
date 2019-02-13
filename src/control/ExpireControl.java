@@ -33,7 +33,7 @@ public class ExpireControl {
         return LazyContainer.control;
     }
 
-    public boolean buildList(){
+    public boolean buildListToAnalyze(){
         boolean res = false;
         try{
             if (this.lock.tryLock(6, TimeUnit.SECONDS)){
@@ -53,13 +53,13 @@ public class ExpireControl {
     }
 
 
-    public boolean analyze(){
+    public boolean analyzeRequestToExpire(){
         boolean res = false;
         try {
-            if (this.lock.tryLock(7, TimeUnit.SECONDS)) {
+            if (this.lock.tryLock(7, TimeUnit.SECONDS))
                 for (RequestForModification item : this.list ){
-                    if (item.getDateOfSubmission().plusDays(5).isAfter(LocalDate.now())) {
-                        // se la richiesta è stata fatta 5 giorni fa ...
+                    if (item.getDateOfSubmission().plusDays(5).isBefore(LocalDate.now())) {
+                        // se la datain cui è stata fatta la richisesta + 5 gg (scadenza) è passata ...
                         RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(item.getType());
                         try {
                             item.expire(true);
@@ -69,10 +69,8 @@ public class ExpireControl {
                             //not critical error
                         }
                     }
-                }
                 res = true;
             }
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
@@ -84,7 +82,7 @@ public class ExpireControl {
     }
 
 
-    public void rollback(){
+    private void rollback(){
         for (RequestForModification item : this.list){
             if ( item.getStatus().name().equals(RequestStatus.TO_EXPIRE.name()) ){
                 item.expire(false);

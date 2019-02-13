@@ -31,8 +31,7 @@ public class EvaluateController {
     /**
      * mostra tutte le richieste pending fatte all'utente
      */
-    @FXML
-    public void doViewRequests() {
+    private void showSubmits() {
         int count = 0;
         List<RequestBean> list = control.getSubmits();
         for (RequestBean item : list) {
@@ -49,11 +48,11 @@ public class EvaluateController {
             GridPane.setConstraints(text3, 4, count);
 
             Button acceptBtn = new Button("accetta");
-            acceptBtn.setOnAction(e -> accept(item.getRequestId()));
+            acceptBtn.setOnAction(e -> sendApproval(item.getRequestId()));
             GridPane.setConstraints(acceptBtn, 5, count);
 
             Button declineBtn = new Button("rifiuta");
-            declineBtn.setOnAction(e -> decline(item.getRequestId()));
+            declineBtn.setOnAction(e -> sendDeclination(item.getRequestId()));
             GridPane.setConstraints(declineBtn, 6, count);
 
             requestGp.getChildren().addAll(sender, text0, text1, text2, text3, acceptBtn, declineBtn);
@@ -61,7 +60,7 @@ public class EvaluateController {
     }
 
     @FXML
-    void decline(int requestId) {
+    void sendDeclination(int requestId) {
         messageArea.clear();
         ErrorMsg msg = new ErrorMsg();
         RequestBean request = new RequestBean();
@@ -82,7 +81,7 @@ public class EvaluateController {
 
 
     @FXML
-    void accept(int requestId) {
+    void sendApproval(int requestId) {
         messageArea.clear();
         ErrorMsg msg = new ErrorMsg();
         RequestBean request = new RequestBean();
@@ -115,7 +114,7 @@ public class EvaluateController {
     public void flushInfo(){
         Platform.runLater(()->{
             clearGridPane(requestGp);
-            doViewRequests();
+            showSubmits();
         });
     }
 

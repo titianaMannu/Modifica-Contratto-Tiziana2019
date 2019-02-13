@@ -22,7 +22,7 @@ public class Reader implements Runnable {
     @Override
     public void run() {
         while (true)
-            if (control.buildList() ){
+            if (control.buildListToAnalyze() ){
                 try {
                     Thread.sleep(timeout);
                 } catch (InterruptedException e) {
