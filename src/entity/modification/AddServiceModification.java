@@ -6,7 +6,7 @@ import java.util.List;
 
 public class AddServiceModification extends Modification{
 
-    public AddServiceModification(Object objectToChange) throws NullPointerException, IllegalArgumentException{
+    public AddServiceModification(Object objectToChange) throws  IllegalArgumentException{
         setObjectToChange(objectToChange);
     }
 
@@ -29,7 +29,7 @@ public class AddServiceModification extends Modification{
     }
 
     @Override
-    public void setObjectToChange(Object objectToChange) throws NullPointerException, IllegalArgumentException {
+    protected void setObjectToChange(Object objectToChange) throws  IllegalArgumentException {
         super.setObjectToChange(objectToChange);
         if (!(objectToChange instanceof OptionalService)) {
             throw new IllegalArgumentException("*******Argument must be a OptionalService instance*******\n");

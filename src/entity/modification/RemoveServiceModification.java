@@ -12,7 +12,7 @@ public class RemoveServiceModification extends Modification {
     }
 
     @Override
-    public void setObjectToChange(Object objectToChange) throws IllegalArgumentException, NullPointerException {
+    protected void setObjectToChange(Object objectToChange) throws IllegalArgumentException {
         super.setObjectToChange(objectToChange);
         if (!(objectToChange instanceof OptionalService)) {
             throw new IllegalArgumentException("*******Argument must be an  OptionalService instance*******\n");

@@ -16,8 +16,8 @@ public abstract class Modification {
      */
     public abstract void update(ActiveContract contract);
 
-    public void setObjectToChange(Object objectToChange) throws NullPointerException{
-        if (objectToChange == null) throw new NullPointerException("objectTochange hat to be not null");
+    protected void setObjectToChange(Object objectToChange) throws IllegalArgumentException{
+        if (objectToChange == null) throw new IllegalArgumentException("objectTochange hat to be not null");
         this.objectToChange = objectToChange;
     }
 

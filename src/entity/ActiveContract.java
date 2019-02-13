@@ -2,7 +2,6 @@ package entity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ActiveContract implements Serializable {
@@ -21,15 +20,14 @@ public class ActiveContract implements Serializable {
     public ActiveContract(int contractId, LocalDate stipulationDate, LocalDate terminationDate,
                           TypeOfPayment paymentMethod, String tenantName, String renterName,  int netPrice,
                           List<OptionalService> serviceList, int frequencyOfPayment) throws IllegalArgumentException {
-
-        setContractId(contractId);
-        setServiceList(serviceList);
-        setFrequencyOfPayment(frequencyOfPayment);
-        setPaymentMethod(paymentMethod);
+        this.contractId = contractId;
+        this.serviceList = serviceList;
+        this.frequencyOfPayment = frequencyOfPayment;
+        this.paymentMethod = paymentMethod;
         setPeriod(stipulationDate, terminationDate);
         setPriceInfo(netPrice);
-        setRenterNickname(renterName);
-        setTenantNickname(tenantName);
+        this.renterNickname = renterName;
+        this.tenantNickname = tenantName;
     }
 
     public int  getContractId() {
@@ -72,10 +70,6 @@ public class ActiveContract implements Serializable {
         return serviceList;
     }
 
-    private void setContractId(int contractId) throws IllegalArgumentException{
-        if (contractId < 0 ) throw new IllegalArgumentException("id del contratto non corretto\n");
-        this.contractId = contractId;
-    }
 
     private void setStipulationDate(LocalDate stipulationDate)throws IllegalArgumentException {
         if (stipulationDate == null)
@@ -93,24 +87,6 @@ public class ActiveContract implements Serializable {
         this.terminationDate = terminationDate;
     }
 
-    private void setTenantNickname(String tenantNickname)throws IllegalArgumentException {
-        if (tenantNickname != null && !tenantNickname.isEmpty())
-            this.tenantNickname = tenantNickname;
-        else throw new IllegalArgumentException("tenant nickname non corretto\n");
-
-        if (renterNickname != null && renterNickname.equals(tenantNickname) )
-            throw new IllegalArgumentException("renter e tenant devono avere nickname differenti\n");
-
-    }
-
-    private void setRenterNickname(String renterNickname) throws IllegalArgumentException {
-        if (renterNickname!= null && !renterNickname.isEmpty())
-             this.renterNickname = renterNickname;
-        else throw new IllegalArgumentException("renter nickname non corretto\n");
-
-        if (tenantNickname != null && tenantNickname.equals(renterNickname) )
-            throw new IllegalArgumentException("renter e tenant devono avere nickname differenti\n");
-    }
 
     private void setGrossPrice() {
         grossPrice = netPrice;
@@ -124,19 +100,7 @@ public class ActiveContract implements Serializable {
         this.netPrice = netPrice;
     }
 
-    private void setFrequencyOfPayment(int frequencyOfPayment) throws IllegalArgumentException{
-        if (frequencyOfPayment < 1) throw new IllegalArgumentException("frequenza (mensile) di pagamento non corretta\n");
-        this.frequencyOfPayment = frequencyOfPayment;
-    }
-
-    private void setServiceList(List<OptionalService> serviceList) {
-        if (serviceList == null)
-            this.serviceList = new ArrayList<>();
-        else this.serviceList = serviceList;
-    }
-
     public void setPeriod(LocalDate stipulationDate, LocalDate terminationDate)throws IllegalArgumentException{
-        //prima si definisce la data di stipulazione e poi quella di terminazione
         setStipulationDate(stipulationDate);
         setTerminationDate(terminationDate);
     }

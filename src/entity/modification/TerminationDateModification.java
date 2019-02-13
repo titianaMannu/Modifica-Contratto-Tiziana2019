@@ -24,7 +24,7 @@ public class TerminationDateModification extends Modification {
     }
 
     @Override
-    public void setObjectToChange(Object objectToChange) throws IllegalArgumentException, NullPointerException {
+    protected void setObjectToChange(Object objectToChange) throws IllegalArgumentException{
         super.setObjectToChange(objectToChange);
         if (!(objectToChange instanceof LocalDate)) {
             throw new IllegalArgumentException("*******Argument must be a  LocalDate instance*******\n");

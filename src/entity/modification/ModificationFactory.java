@@ -34,7 +34,7 @@ public class ModificationFactory {
                     return null;
             }
 
-        }catch (IllegalArgumentException | NullPointerException e){
+        }catch (IllegalArgumentException e){
             e.printStackTrace();
             return  null;
         }
