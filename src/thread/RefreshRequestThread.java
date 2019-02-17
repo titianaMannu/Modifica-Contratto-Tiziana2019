@@ -6,7 +6,7 @@ import boundary.request.RequestController;
  * soluzione di tipo polling : la gui periodicamente aggiorna i propri dati
  * si è preferito questo tipo di soluzione in quanto il carico di tati da aggiornare non è eccessivo
  */
-public class RefreshRequestThread extends Thread{
+public class RefreshRequestThread implements Runnable{
     private RequestController requestController;
 
     public RefreshRequestThread(RequestController requestController) {

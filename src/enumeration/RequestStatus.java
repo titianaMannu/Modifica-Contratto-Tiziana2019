@@ -1,4 +1,4 @@
-package entity.request;
+package enumeration;
 
 /**
  * PENDING: il Mittente ha inviato la richiesta che ancora non è stata visualizzata. Non è possibile cambiare i parametri della richiesta.

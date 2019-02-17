@@ -1,14 +1,14 @@
 package DAO.modificationDAO;
-import entity.modification.*;
+import enumeration.TypeOfModification;
 
 public class ModificationDaoFActory {
 
-    private static ModificationDaoFActory ourInstance = null;
+    private static class LazyContainer{
+        private static final ModificationDaoFActory instance = new ModificationDaoFActory();
+    }
 
-    public static synchronized  ModificationDaoFActory getInstance() {
-        if (ourInstance == null)
-            ourInstance = new ModificationDaoFActory();
-        return ourInstance;
+    public static ModificationDaoFActory getInstance(){
+        return LazyContainer.instance;
     }
 
     private ModificationDaoFActory() {

@@ -1,6 +1,6 @@
 package entity.modification;
 import entity.ActiveContract;
-import entity.TypeOfPayment;
+import enumeration.TypeOfPayment;
 
 public class PaymentMethodModification extends Modification {
 

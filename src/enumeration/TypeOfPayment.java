@@ -1,4 +1,4 @@
-package entity;
+package enumeration;
 
 public enum TypeOfPayment {
     CREDIT_CARD(0, "carta di credito"),

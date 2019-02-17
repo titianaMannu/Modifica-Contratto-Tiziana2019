@@ -2,9 +2,9 @@ package control;
 
 import DAO.modificationDAO.ModificationDaoFActory;
 import DAO.modificationDAO.RequestForModificationDao;
-import entity.modification.TypeOfModification;
-import entity.request.RequestForModification;
-import entity.request.RequestStatus;
+import enumeration.TypeOfModification;
+import entity.RequestForModification;
+import enumeration.RequestStatus;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -33,31 +33,32 @@ public class ExpireControl {
         return LazyContainer.control;
     }
 
-    public boolean buildListToAnalyze(){
+    public synchronized boolean buildListToAnalyze(){
         boolean res = false;
         try{
-            if (this.lock.tryLock(6, TimeUnit.SECONDS)){
+           if (this.lock.tryLock(5, TimeUnit.SECONDS)){
                     this.list.clear();
                     for (TypeOfModification type : TypeOfModification.values()){
                         RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(type);
                         this.list.addAll(dao.getRequestsToExpire());
                     }
-            }
-            res = true;
+                    res = true;
+           }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
-            this.lock.unlock();
+            if (res)//altrimenti ho rischio di IllegalStateMonitorException
+                this.lock.unlock();
             return res;
         }
     }
 
 
-    public boolean analyzeRequestToExpire(){
+    public synchronized boolean analyzeRequestToExpire(){
         boolean res = false;
         try {
-            if (this.lock.tryLock(7, TimeUnit.SECONDS))
-                for (RequestForModification item : this.list ){
+            if (this.lock.tryLock(5, TimeUnit.SECONDS)) {
+                for (RequestForModification item : this.list) {
                     if (item.getDateOfSubmission().plusDays(5).isBefore(LocalDate.now())) {
                         // se la datain cui è stata fatta la richisesta + 5 gg (scadenza) è passata ...
                         RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(item.getType());
@@ -69,6 +70,7 @@ public class ExpireControl {
                             //not critical error
                         }
                     }
+                }
                 res = true;
             }
         } catch (InterruptedException e) {
@@ -76,9 +78,10 @@ public class ExpireControl {
         }finally {
             //pone le richieste non obsolete nuovamente PENDING
             rollback();
-            this.lock.unlock();
-            return  res;
+            if (res)
+                this.lock.unlock();
         }
+        return  res;
     }
 
 

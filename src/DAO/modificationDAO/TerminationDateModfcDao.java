@@ -4,8 +4,9 @@ import entity.ActiveContract;
 import beans.RequestBean;
 import DAO.C3poDataSource;
 import entity.modification.*;
-import entity.request.RequestForModification;
-import entity.request.RequestStatus;
+import entity.RequestForModification;
+import enumeration.RequestStatus;
+import enumeration.TypeOfModification;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -13,17 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TerminationDateModfcDao extends RequestForModificationDao {
-
-    private static TerminationDateModfcDao ourInstance = null;
-
     private TerminationDateModfcDao() {
         // default constructor must be private because of we are using singleton pattern
     }
 
-    public static synchronized TerminationDateModfcDao getInstance(){
-        if (ourInstance == null)
-            ourInstance = new TerminationDateModfcDao();
-        return ourInstance;
+    private static class LazyContainer{
+        private static final TerminationDateModfcDao instance = new TerminationDateModfcDao();
+    }
+
+    public static TerminationDateModfcDao getInstance(){
+        return  LazyContainer.instance;
     }
 
     /**
@@ -105,11 +105,13 @@ public class TerminationDateModfcDao extends RequestForModificationDao {
         }
         String sql = "select count(newDate) as numOfRequests\n" +
                 "from TerminationDateModification as m join requestForModification as rm on m.requestId = rm.idRequest" +
-                " && m.requestC = ?\nwhere rm.status = 0" ;
+                " && m.requestC = ?\nwhere rm.status = ? or rm.status = ?" ;
         try (Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
             if (!conn.getAutoCommit())
                 conn.setAutoCommit(true);
             st.setInt(1, request.getActiveContract().getContractId());
+            st.setInt(2, RequestStatus.PENDING.getValue());
+            st.setInt(3, RequestStatus.TO_EXPIRE.getValue());
             ResultSet res = st.executeQuery();
             if (res.next()) {
                 if (res.getInt("numOfRequests") > 0)
@@ -184,7 +186,7 @@ public class TerminationDateModfcDao extends RequestForModificationDao {
      *@return una lista contenete tutte le richieste  relative contrat e destinate a receiver
      */
     @Override
-    public List<RequestBean> getSubmits(ActiveContract activeContract, String receiver) {
+    public List<RequestBean> getSubmits(int contractId, String receiver) {
         List<RequestBean> list = new ArrayList<>();
         String sql = "select  dateOfSubmission, reasonWhy, idRequest, senderNickname\n" +
                 "from requestForModification\n" +
@@ -192,14 +194,14 @@ public class TerminationDateModfcDao extends RequestForModificationDao {
         try(Connection conn = C3poDataSource.getConnection(); PreparedStatement st = conn.prepareStatement(sql)){
             if (!conn.getAutoCommit() )
                 conn.setAutoCommit(true);
-            st.setInt(1, activeContract.getContractId());
+            st.setInt(1, contractId);
             st.setString(2, receiver);
             st.setInt(3, TypeOfModification.CHANGE_TERMINATIONDATE.getValue());
             st.setInt(4, RequestStatus.PENDING.getValue());
             ResultSet res = st.executeQuery();
             while(res.next()){
                 //tipo di modifica è di tipo REMOVE_SERVICE  in questo caso
-                Modification modfc = getModification(activeContract.getContractId(), res.getInt("idRequest"));
+                Modification modfc = getModification(contractId, res.getInt("idRequest"));
                 if (modfc == null)
                   continue;
                 RequestBean request = new RequestBean(TypeOfModification.CHANGE_TERMINATIONDATE,

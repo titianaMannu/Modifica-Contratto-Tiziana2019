@@ -1,9 +1,9 @@
-package entity.request;
+package entity;
 
-import entity.ActiveContract;
 import entity.modification.Modification;
 import entity.modification.ModificationFactory;
-import entity.modification.TypeOfModification;
+import enumeration.TypeOfModification;
+import enumeration.RequestStatus;
 
 import java.time.LocalDate;
 

@@ -6,7 +6,7 @@ import boundary.evaluate.EvaluateController;
  * soluzione di tipo polling : la gui periodicamente aggiorna i propri dati
  * si è preferito questo tipo di soluzione in quanto il carico di tati da aggiornare non è eccessivo
  */
-public class RefreshEvaluateThread   extends  Thread{
+public class RefreshEvaluateThread  implements Runnable{
     private EvaluateController evaluateController;
 
     public RefreshEvaluateThread(EvaluateController evaluateController) {

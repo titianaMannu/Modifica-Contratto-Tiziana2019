@@ -6,19 +6,18 @@ import beans.RequestBean;
 import DAO.ContractDao;
 import DAO.modificationDAO.ModificationDaoFActory;
 import DAO.modificationDAO.RequestForModificationDao;
-import entity.modification.TypeOfModification;
-import entity.request.RequestForModification;
-import entity.request.RequestStatus;
+import enumeration.TypeOfModification;
+import entity.RequestForModification;
+import enumeration.RequestStatus;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ottieni contratto
  * ottieni proposte
- * accetta proposta
- * respingi proposta
+ * accetta proposte
+ * respingi proposte
  */
 
 public class EvaluateControl {
@@ -28,10 +27,6 @@ public class EvaluateControl {
     public EvaluateControl(String userNickname, int contractId) {
         setUserNickname(userNickname);
         setActiveContract(contractId);
-    }
-
-    public ActiveContract getContract(int contractId){
-        return activeContract;
     }
 
     public ErrorMsg setUserNickname(String userNickname) {
@@ -62,7 +57,7 @@ public class EvaluateControl {
         try{
             for (TypeOfModification type : TypeOfModification.values()) {
                 RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(type);
-                List<RequestBean> tmp = dao.getSubmits(activeContract, userNickname);
+                List<RequestBean> tmp = dao.getSubmits(activeContract.getContractId(), userNickname);
                 list.addAll(tmp);
             }
         }catch (NullPointerException e){
@@ -74,7 +69,7 @@ public class EvaluateControl {
     public ErrorMsg accept(RequestBean requestBean){
         ErrorMsg msg = new ErrorMsg();
         if (requestBean.getStatus() != RequestStatus.PENDING){
-            msg.addMsg("Solo richieste pending possono essere accettate\n");
+            msg.addMsg("Solo richieste pending possono essere accettate.\n");
             return msg;
         }
         try{

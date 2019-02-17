@@ -1,10 +1,13 @@
 package entity;
 
-import java.io.Serializable;
+import beans.ActiveContractBean;
+import enumeration.TypeOfPayment;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ActiveContract implements Serializable {
+public class ActiveContract  {
     private int contractId;
     private LocalDate stipulationDate;
     private LocalDate terminationDate;
@@ -19,32 +22,20 @@ public class ActiveContract implements Serializable {
 
     public ActiveContract(int contractId, LocalDate stipulationDate, LocalDate terminationDate,
                           TypeOfPayment paymentMethod, String tenantName, String renterName,  int netPrice,
-                          List<OptionalService> serviceList, int frequencyOfPayment) throws IllegalArgumentException {
+                          List<OptionalService> serviceList, int frequencyOfPayment) {
+
         this.contractId = contractId;
-        this.serviceList = serviceList;
+        this.serviceList = new ArrayList<>(serviceList);
         this.frequencyOfPayment = frequencyOfPayment;
         this.paymentMethod = paymentMethod;
-        setPeriod(stipulationDate, terminationDate);
-        setPriceInfo(netPrice);
+        this.stipulationDate = stipulationDate;
+        this.terminationDate = terminationDate;
         this.renterNickname = renterName;
         this.tenantNickname = tenantName;
+        this.netPrice = netPrice;
+        setGrossPrice();
     }
 
-    public int  getContractId() {
-        return contractId;
-    }
-
-    public LocalDate getStipulationDate() {
-        return stipulationDate;
-    }
-
-    public LocalDate getTerminationDate() {
-        return terminationDate;
-    }
-
-    public TypeOfPayment getPaymentMethod() {
-        return paymentMethod;
-    }
 
     public String getTenantNickname() {
         return tenantNickname;
@@ -54,69 +45,46 @@ public class ActiveContract implements Serializable {
         return renterNickname;
     }
 
-    public int getGrossPrice() {
-        return grossPrice;
+    public int  getContractId() {
+        return contractId;
     }
 
-    public int getNetPrice() {
-        return netPrice;
+    public TypeOfPayment getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public int getFrequencyOfPayment() {
-        return frequencyOfPayment;
+    public LocalDate getTerminationDate() {
+        return terminationDate;
     }
+
 
     public List<OptionalService> getServiceList() {
         return serviceList;
     }
 
 
-    private void setStipulationDate(LocalDate stipulationDate)throws IllegalArgumentException {
-        if (stipulationDate == null)
-            throw  new IllegalArgumentException("data stipulazione non specificata\n");
-        if ( !stipulationDate.isAfter(LocalDate.now())) //data stipulazione deve essere antecedente o uguale al giorno corrente
-             this.stipulationDate = stipulationDate;
-        else throw new IllegalArgumentException("Data stipulazione non corretta\n");
-    }
-
-    private void setTerminationDate(LocalDate terminationDate)throws IllegalArgumentException {
+    public void setTerminationDate(LocalDate terminationDate)throws IllegalArgumentException {
         if (terminationDate == null)
             throw new IllegalArgumentException("Data di terminazione non specificata\n");
-        if (stipulationDate.isAfter(terminationDate) || stipulationDate.equals(terminationDate))
+        if (this.stipulationDate.isAfter(terminationDate) || this.stipulationDate.equals(terminationDate))
             throw new IllegalArgumentException("data di terminazione non compatibile con quella di stipulazione\n");
         this.terminationDate = terminationDate;
     }
 
 
-    private void setGrossPrice() {
-        grossPrice = netPrice;
-        if (serviceList == null ) return;
-        for (OptionalService item : serviceList)
-            grossPrice += item.getServicePrice();
+    public void setGrossPrice() {
+        this.grossPrice = this.netPrice;
+        for (OptionalService item : this.serviceList)
+            this.grossPrice += item.getServicePrice();
     }
 
-    private void setNetPrice(int netPrice) throws IllegalArgumentException{
-        if (netPrice < 1) throw new IllegalArgumentException("Prezzo non significativo\n");
-        this.netPrice = netPrice;
-    }
 
-    public void setPeriod(LocalDate stipulationDate, LocalDate terminationDate)throws IllegalArgumentException{
-        setStipulationDate(stipulationDate);
-        setTerminationDate(terminationDate);
-    }
 
     public void setPaymentMethod(TypeOfPayment paymentMethod)throws IllegalArgumentException {
         if (paymentMethod == null) throw new IllegalArgumentException("tipo di pagamento non specificato\n");
         this.paymentMethod = paymentMethod;
     }
 
-    /**
-     *Operazione setPriceInfo che stabilisce sia  grossPrice che netPrice
-     */
-    public void setPriceInfo(int netPrice) throws IllegalArgumentException{
-        setNetPrice(netPrice);
-        setGrossPrice();
-    }
 
     @Override
     public boolean equals(Object object) {
@@ -141,4 +109,14 @@ public class ActiveContract implements Serializable {
                 ", serviceList=" + serviceList +
                 '}';
     }
+
+    public ActiveContractBean makeBean(){
+        ActiveContractBean contractBean = new ActiveContractBean(contractId, stipulationDate, terminationDate, paymentMethod,
+                tenantNickname, renterNickname, grossPrice, netPrice, frequencyOfPayment);
+        for (OptionalService item : serviceList){
+            contractBean.addService(item.makeBean());
+        }
+        return contractBean;
+    }
+
 }

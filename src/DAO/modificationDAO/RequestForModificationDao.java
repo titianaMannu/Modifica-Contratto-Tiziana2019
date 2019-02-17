@@ -5,9 +5,9 @@ import entity.ActiveContract;
 import beans.RequestBean;
 import DAO.C3poDataSource;
 import entity.modification.Modification;
-import entity.modification.TypeOfModification;
-import entity.request.RequestForModification;
-import entity.request.RequestStatus;
+import enumeration.TypeOfModification;
+import entity.RequestForModification;
+import enumeration.RequestStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -25,7 +25,8 @@ public abstract class RequestForModificationDao {
     /**
      * inserisce la modifica nel DB
      */
-    public abstract void insertModification(RequestForModification request) throws SQLException;
+    public abstract void insertModification(RequestForModification request)
+            throws NullPointerException, IllegalArgumentException, IllegalStateException, SQLException;
 
     /**
      * controlla che non ci siano altre richieste di modifica uguali (PENDING) per il contratto
@@ -75,7 +76,7 @@ public abstract class RequestForModificationDao {
     /**
      *@return una lista contenete tutte le richieste PENDING relative a contrat e destinate a receiver
      */
-    public abstract List<RequestBean> getSubmits(ActiveContract activeContract, String receiver);
+    public abstract List<RequestBean> getSubmits(int contractId,  String receiver);
 
     /**
      * Si occupa dell'inserimento della richiesta e della modifica corrispondente

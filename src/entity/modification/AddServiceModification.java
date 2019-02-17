@@ -25,7 +25,7 @@ public class AddServiceModification extends Modification{
     public void update(ActiveContract contract) {
         List<OptionalService> list = contract.getServiceList();
         list.add(getObjectToChange()); //aggiunta del servizio
-        contract.setPriceInfo(contract.getNetPrice()); // ricalcolo del prezzo lordo
+        contract.setGrossPrice(); // ricalcolo del prezzo lordo
     }
 
     @Override

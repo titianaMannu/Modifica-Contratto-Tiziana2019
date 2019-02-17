@@ -2,20 +2,20 @@ package entity.modification;
 
 import beans.OptionalServiceBean;
 import entity.OptionalService;
+import enumeration.TypeOfModification;
 
 public class ModificationFactory {
 
-    private static ModificationFactory ourInstance = new ModificationFactory();
-
-    /**
-     * using singleton pattern to obtain the only one factory
-     */
-    public static synchronized ModificationFactory getInstance() {
-        return ourInstance;
+    public static ModificationFactory getInstance() {
+        return LazyContainer.instance;
     }
 
     private ModificationFactory() {
         // default constructor must be private because of we are using singleton pattern
+    }
+
+    private static class LazyContainer{
+        private final static ModificationFactory instance = new ModificationFactory();
     }
 
 
@@ -45,23 +45,20 @@ public class ModificationFactory {
      * Se ho in input un bean viene fatta la creazione della entity service e passata alla modifica.
      */
     private Modification createAddServiceModfc(Object objectToChange) throws IllegalArgumentException{
-        if (objectToChange instanceof OptionalService)
-            return new AddServiceModification(objectToChange);
-        if (!(objectToChange instanceof OptionalServiceBean)) throw  new IllegalArgumentException();
-        OptionalServiceBean obj = (OptionalServiceBean)objectToChange;
-        OptionalService optionalService = new OptionalService(obj.getServiceName(), obj.getServicePrice(), obj.getDescription());
-        return new AddServiceModification(optionalService);
+        if (objectToChange instanceof OptionalServiceBean) {
+            OptionalServiceBean obj = (OptionalServiceBean) objectToChange;
+            objectToChange = new OptionalService(obj.getServiceName(), obj.getServicePrice(), obj.getDescription());
+        }
+        return new AddServiceModification(objectToChange);
     }
 
     private Modification createRemoveServiceModfc(Object objectToChange)
-                        throws  IllegalArgumentException, IllegalStateException{
-        if (objectToChange instanceof OptionalService)
-            return new RemoveServiceModification(objectToChange);
-        if (!(objectToChange instanceof OptionalServiceBean)) throw  new IllegalArgumentException();
-        OptionalServiceBean obj = (OptionalServiceBean)objectToChange;
-        OptionalService optionalService = new OptionalService(obj.getServiceId(), obj.getServiceName(), obj.getServicePrice(),
-                obj.getDescription());
-        return new RemoveServiceModification(optionalService);
+            throws  IllegalArgumentException {
+        if (objectToChange instanceof OptionalServiceBean) {
+            OptionalServiceBean obj = (OptionalServiceBean) objectToChange;
+            objectToChange = new OptionalService(obj.getServiceId(), obj.getServiceName(), obj.getServicePrice(), obj.getDescription());
+        }
+        return new RemoveServiceModification(objectToChange);
     }
 
     private Modification createPaymentModfc(Object objectToChange) throws  IllegalArgumentException{

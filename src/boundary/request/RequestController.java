@@ -1,19 +1,15 @@
 package boundary.request;
 
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.ResourceBundle;
-
-import entity.ActiveContract;
+import beans.ActiveContractBean;
 import beans.ErrorMsg;
 import beans.RequestBean;
 import control.RequestControl;
 import beans.OptionalServiceBean;
-import entity.OptionalService;
-import entity.TypeOfPayment;
-import entity.modification.TypeOfModification;
-import entity.request.RequestStatus;
+import enumeration.TypeOfPayment;
+import enumeration.TypeOfModification;
+import enumeration.RequestStatus;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -40,12 +36,6 @@ public class RequestController {
     private Text idContractField;
 
     @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
-
-    @FXML
     private Label frequencyField;
 
     @FXML
@@ -67,16 +57,7 @@ public class RequestController {
     private DatePicker TerminationDateField;
 
     @FXML
-    private Button changeDateBtn;
-
-    @FXML
     private ComboBox<String> paymentComboBox;
-
-    @FXML
-    private Button changePaymentBtn;
-
-    @FXML
-    private Button addServiceBtn;
 
     @FXML
     private Button confirmationBtn;
@@ -237,9 +218,9 @@ public class RequestController {
     @FXML
     void doDeleteService( int serviceId) {
         messageArea.clear();
-        OptionalService service = null;
+        OptionalServiceBean service = null;
         //takes elements from the gridPane by using the input row field
-        for (OptionalService item : control.getContract().getServiceList())
+        for (OptionalServiceBean item : control.getContract().getServiceList())
             if (item.getServiceId() == serviceId){ //mi basta sapere l'id per ricavare tutti i campi del servizio in questione
                 service = item;
                 break;
@@ -263,7 +244,7 @@ public class RequestController {
     @FXML
     public void displayContractField(){
         int count = 0;
-        ActiveContract contract = control.getContract();
+        ActiveContractBean contract = control.getContract();
         idContractField.setText(String.valueOf(contract.getContractId()));
         tenantField.setText(contract.getTenantNickname());
         renterField.setText(contract.getRenterNickname());
@@ -274,7 +255,7 @@ public class RequestController {
         initDateField.setText(contract.getStipulationDate().toString());
         TerminationDateField.setValue(contract.getTerminationDate());
         //creation of a grisPane  dynamically
-        for (OptionalService service : contract.getServiceList()){
+        for (OptionalServiceBean service : contract.getServiceList()){
             ++count;
             Label label0 = new Label(String.valueOf(service.getServiceId()));
             GridPane.setConstraints(label0, 0, count);
@@ -313,13 +294,10 @@ public class RequestController {
 
 
 
-    public void refrshAvailable(boolean b){
-        if (b) {
-           RefreshRequestThread thread = new RefreshRequestThread(this);
-            thread.setDaemon(false);
-            thread.start();
-        }
-
+    public void refrshAvailable(){
+       Thread thread = new Thread( new RefreshRequestThread(this) );
+        thread.setDaemon(false);
+        thread.start();
     }
 
 

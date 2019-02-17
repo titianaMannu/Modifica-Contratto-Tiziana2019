@@ -39,7 +39,7 @@ public class RemoveServiceModification extends Modification {
     public void update(ActiveContract contract) {
         List<OptionalService> list = contract.getServiceList();
         list.remove(getObjectToChange()); //rimozione del servizio
-        contract.setPriceInfo(contract.getNetPrice()); // ricalcolo del prezzo lordo
+        contract.setGrossPrice(); // ricalcolo del prezzo lordo
     }
 
 

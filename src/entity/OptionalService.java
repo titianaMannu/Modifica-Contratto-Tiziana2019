@@ -1,5 +1,7 @@
 package entity;
 
+import beans.OptionalServiceBean;
+
 public class OptionalService {
         private int serviceId = -1;
         private  String serviceName;
@@ -60,6 +62,10 @@ public class OptionalService {
             return serviceId == optionalService.serviceId;
         }
 
+        public OptionalServiceBean makeBean()throws IllegalArgumentException {
+            if (this.serviceId < 1) throw  new IllegalArgumentException("serviceId non corretto\n");
+            return  new OptionalServiceBean(serviceId, serviceName, servicePrice, description);
+        }
 
 }
 

@@ -101,7 +101,7 @@ public class EvaluateController {
 
 
     public void refrshAvailable(){
-        RefreshEvaluateThread thread = new RefreshEvaluateThread(this);
+        Thread thread = new Thread(new RefreshEvaluateThread(this));
         thread.setDaemon(false);
         thread.start();
     }

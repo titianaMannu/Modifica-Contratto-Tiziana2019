@@ -1,4 +1,4 @@
-package entity.modification;
+package enumeration;
 
 public enum TypeOfModification {
     // insieme delle modifiche ammissibili

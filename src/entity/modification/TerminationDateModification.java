@@ -20,7 +20,7 @@ public class TerminationDateModification extends Modification {
 
     @Override
     public void update(ActiveContract contract) {
-        contract.setPeriod(contract.getStipulationDate(), getObjectToChange());
+        contract.setTerminationDate(getObjectToChange());
     }
 
     @Override

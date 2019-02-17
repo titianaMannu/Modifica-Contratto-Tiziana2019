@@ -1,13 +1,13 @@
 package control;
 
-import entity.ActiveContract;
+import beans.ActiveContractBean;
 import beans.ErrorMsg;
 import beans.RequestBean;
 import DAO.ContractDao;
 import DAO.modificationDAO.ModificationDaoFActory;
 import DAO.modificationDAO.RequestForModificationDao;
-import entity.UserType;
-import entity.modification.TypeOfModification;
+import enumeration.UserType;
+import enumeration.TypeOfModification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +31,9 @@ public class InitControl {
         return userNickname;
     }
 
-    public List<ActiveContract> getAllContract(){
+    public List<ActiveContractBean> getAllContract(){
         ContractDao dao = ContractDao.getInstance();
-        List<ActiveContract> list = new ArrayList<>();
+        List<ActiveContractBean> list = new ArrayList<>();
         for (UserType type : UserType.values())
             list.addAll(dao.getAllActiveContracts(userNickname, type));
         return list;
@@ -42,12 +42,12 @@ public class InitControl {
     /**
      * ritorna il # di richieste di modifica per un contratto
      */
-    public int  getSubmits(ActiveContract contract){
+    public int  getSubmits(ActiveContractBean contract){
         List<RequestBean> list = new ArrayList<>();
         try{
             for (TypeOfModification type : TypeOfModification.values()) {
                 RequestForModificationDao dao = ModificationDaoFActory.getInstance().createProduct(type);
-                List<RequestBean> tmp = dao.getSubmits(contract, userNickname);
+                List<RequestBean> tmp = dao.getSubmits(contract.getContractId(), userNickname);
                 list.addAll(tmp);
             }
         }catch (NullPointerException e){

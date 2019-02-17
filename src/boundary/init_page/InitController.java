@@ -2,8 +2,8 @@ package boundary.init_page;
 
 import java.util.List;
 
+import beans.ActiveContractBean;
 import control.InitControl;
-import entity.ActiveContract;
 import control.RequestControl;
 import control.EvaluateControl;
 import javafx.application.Platform;
@@ -45,9 +45,9 @@ public class InitController  {
     private void viewContracts () {
         if (initControl == null) return;
         UserName.setText(initControl.getUserNickname());
-        List<ActiveContract> list = initControl.getAllContract();
+        List<ActiveContractBean> list = initControl.getAllContract();
         int count = 0;
-        for (ActiveContract contract : list) {
+        for (ActiveContractBean contract : list) {
             ++count;
             int inVal = contract.getContractId();
             Label l0 = new Label(String.valueOf(contract.getContractId()));
@@ -98,7 +98,7 @@ public class InitController  {
             RequestController controller = loader.getController();
             controller.setControl(requestControl);
             // thread per aggiornare periodicamente lo stato delle richieste
-            controller.refrshAvailable(true);
+            controller.refrshAvailable();
 
             Stage stage = new Stage();
             stage.initStyle(StageStyle.DECORATED);
@@ -111,13 +111,10 @@ public class InitController  {
         flushInfo();
     }
 
-    public void refrshAvailable(boolean b){
-       if (b) {
-           RefreshTread thread = new RefreshTread(this);
-           thread.setDaemon(false);
-           thread.start();
-       }
-
+    public void refrshAvailable(){
+       Thread thread = new Thread(new RefreshTread(this));
+       thread.setDaemon(false);
+       thread.start();
     }
 
     private void clearGridPane(GridPane gp){

@@ -1,5 +1,6 @@
 package control;
 
+import beans.ActiveContractBean;
 import entity.ActiveContract;
 import beans.RequestBean;
 
@@ -7,18 +8,16 @@ import DAO.ContractDao;
 import DAO.modificationDAO.ModificationDaoFActory;
 import DAO.modificationDAO.RequestForModificationDao;
 import beans.ErrorMsg;
-import entity.modification.TypeOfModification;
-import entity.request.RequestForModification;
-import entity.request.RequestStatus;
+import enumeration.TypeOfModification;
+import entity.RequestForModification;
+import enumeration.RequestStatus;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * inserisci richiesta
- * visualizza proposte
- * ottieni contratto
- * chiudi richiesta (segna come letto)
+ * inserisci richieste
+ * elimina richiesta (segna come letto)
  */
 
 public class RequestControl {
@@ -30,8 +29,9 @@ public class RequestControl {
         setActiveContract(contractId);
     }
 
-    public ActiveContract getContract(){
-        return activeContract;
+    public ActiveContractBean getContract(){
+        if (activeContract == null ) return null;
+        return activeContract.makeBean();
     }
 
     public String getUserNickname() {

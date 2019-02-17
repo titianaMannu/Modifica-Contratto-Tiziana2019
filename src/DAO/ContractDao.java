@@ -1,9 +1,10 @@
 package DAO;
 
+import beans.ActiveContractBean;
 import entity.ActiveContract;
 import entity.OptionalService;
-import entity.TypeOfPayment;
-import entity.UserType;
+import enumeration.TypeOfPayment;
+import enumeration.UserType;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,14 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContractDao {
-    private static ContractDao ourInstance  = null;
 
-    public static synchronized ContractDao getInstance() {
-        if (ourInstance == null) ourInstance = new ContractDao();
-        return ourInstance;
+    public static ContractDao getInstance() {
+      return LazyContainer.instance;
     }
 
     private ContractDao() {
+    }
+
+    private static class LazyContainer{
+        private static final ContractDao instance = new ContractDao();
     }
 
     public ActiveContract getContract(int contractId){
@@ -59,8 +62,8 @@ public class ContractDao {
      * @param userNickName : nickname dell'utente
      * @param type : renter o tenant, altrimenti viene ritornata una lista vuota
      */
-    public List<ActiveContract> getAllActiveContracts(String userNickName, UserType type) {
-        List<ActiveContract> list = new ArrayList<>();
+    public List<ActiveContractBean> getAllActiveContracts(String userNickName, UserType type) {
+        List<ActiveContractBean> list = new ArrayList<>();
         String sql;
 
         switch (type){
@@ -74,6 +77,7 @@ public class ContractDao {
                         "from ActiveContract\n" +
                         "where tenantNickname = ? ";
                 break;
+
                 default: return list;
         }
         try (Connection connection = C3poDataSource.getConnection(); PreparedStatement st = connection.prepareStatement(sql)) {
@@ -83,7 +87,7 @@ public class ContractDao {
                 try {
                     ActiveContract contract = getContract(res.getInt("idContract"));
                     if (contract != null) {
-                        list.add(contract);
+                        list.add(contract.makeBean());
                     }
                 }catch(IllegalArgumentException e){
                     e.printStackTrace();

@@ -2,27 +2,19 @@ package thread;
 
 import control.ExpireControl;
 
-public class Reader implements Runnable {
-    private  long timeout;
+public class RequestParser implements Runnable {
+    private long timeout;
     private ExpireControl control;
 
-    private Reader() {
-        this.timeout = 12000; //10 sec
+    public RequestParser() {
         this.control = ExpireControl.getInstance();
-    }
-
-    private static class LazyContainer{
-        private final static Reader reader = new Reader();
-    }
-
-    public static Reader getInstance(){
-        return LazyContainer.reader;
+        this.timeout = 6000;
     }
 
     @Override
     public void run() {
         while (true)
-            if (control.buildListToAnalyze() ){
+            if ( control.analyzeRequestToExpire() ){
                 try {
                     Thread.sleep(timeout);
                 } catch (InterruptedException e) {
@@ -30,5 +22,4 @@ public class Reader implements Runnable {
                 }
             }
     }
-
 }
