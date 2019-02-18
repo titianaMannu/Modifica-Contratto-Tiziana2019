@@ -2,10 +2,7 @@ package DAO;
 
 import com.mchange.v2.c3p0.*;
 import java.beans.PropertyVetoException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * connection pooling generator in order to optimize the connection time's costs
@@ -23,26 +20,23 @@ public class C3poDataSource {
         }
     }
 
-    public static synchronized Connection getConnection() throws SQLException {
+    public static  Connection getConnection() throws SQLException {
         return cpds.getConnection();
     }
 
     private C3poDataSource(){}
 
-    public static void main(String args[]){
-        /**
-         * semplice prova per vedere se funziona!
-         * just ignore the following lines
-         */
-        try (Connection con = C3poDataSource.getConnection()) {
-            Statement st = con.createStatement();
-            String sql = " select * from ActiveContract";
-            ResultSet res = st.executeQuery(sql);
-            if (res.next())
-                System.out.println(res.getString("tenantNinckname"));
-        }catch (SQLException e){
-            e.printStackTrace();
-            System.exit(-2);
-        }
+    //semplice implementazione per ottenere una connessione
+    public static Connection getSimpleConnection() throws ClassNotFoundException, SQLException{
+        Connection conn = null;
+        //loading dinamico del driver mysql
+        Class.forName("com.mysql.jdbc.Driver");
+        //url
+        String dburl = "jdbc:mysql://localhost/FERSA?user=modificatore&password=M.odificatore";
+        //apertura connessione
+        conn = DriverManager.getConnection(dburl);
+
+        return conn;
     }
+
 }

@@ -2,11 +2,12 @@ package beans;
 
 import enumeration.TypeOfPayment;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActiveContractBean {
+public class ActiveContractBean implements Serializable {
     private int contractId;
     private LocalDate stipulationDate;
     private LocalDate terminationDate;

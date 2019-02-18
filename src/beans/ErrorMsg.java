@@ -1,12 +1,13 @@
 package beans;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Bean per la memorizzazione di uno o piú messaggi di errore
  */
-public class ErrorMsg {
+public class ErrorMsg implements Serializable {
     private List<String> msg;
 
 

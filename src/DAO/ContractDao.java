@@ -29,7 +29,7 @@ public class ContractDao {
         ActiveContract activeContract = null;
         String sql = "select  stipulationDate, terminationDate, paymentMethod, tenantNickname, " +
                 "renterNickname, netPrice, frequencyOfPayment\nfrom ActiveContract\n" +
-                "where idContract = ?";
+                "where idContract = ? and status=0";
         try(Connection conn = C3poDataSource.getConnection()){
             //gestione transazione non in autocommit perché prevede piú di un'operazione
                 conn.setAutoCommit(false);
