@@ -1,4 +1,4 @@
-import control.InitControl;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,14 +16,14 @@ public class Main extends Application {
         primaryStage.setTitle("Login");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-/*
+
         Thread t1 = new Thread( new RequestParser());
         Thread t2 = new Thread(new RequestReader());
         t1.setDaemon(false);
         t2.setDaemon(false);
         t2.start();
         t1.start();
-*/
+
     }
 
 
